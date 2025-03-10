@@ -122,29 +122,27 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         nameHeader.setFont(new Font("Arial", Font.BOLD, 18));
         namePanel.add(nameHeader, BorderLayout.NORTH);
         
-        final String placeholderText = "Enter pet name..."; // Store placeholder
+        final String placeholderText = "Enter pet name..."; 
         petNameField = new JTextField(placeholderText);
         petNameField.setHorizontalAlignment(JTextField.CENTER);
 
-        // *** ADD FOCUS LISTENER ***
-        petNameField.addFocusListener(new java.awt.event.FocusAdapter() { // Specify package
+        petNameField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
-            public void focusGained(java.awt.event.FocusEvent e) { // Specify package
+            public void focusGained(java.awt.event.FocusEvent e) {
                 if (petNameField.getText().equals(placeholderText)) {
                     petNameField.setText("");
-                    petNameField.setForeground(Color.BLACK); // Use default text color
+                    petNameField.setForeground(Color.BLACK); 
                 }
             }
 
             @Override
-            public void focusLost(java.awt.event.FocusEvent e) { // Specify package
+            public void focusLost(java.awt.event.FocusEvent e) { 
                 if (petNameField.getText().isEmpty()) {
-                    petNameField.setForeground(Color.GRAY); // Make placeholder distinct
+                    petNameField.setForeground(Color.GRAY); 
                     petNameField.setText(placeholderText);
                 }
             }
         });
-        // Set initial placeholder color
         petNameField.setForeground(Color.GRAY);
         
         namePanel.add(petNameField, BorderLayout.CENTER);
@@ -174,18 +172,14 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         card.setBackground(Color.WHITE);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         
-        // Set a consistent preferred size for all cards
-        card.setPreferredSize(new Dimension(220, 400)); // Increased height to accommodate new images
+        card.setPreferredSize(new Dimension(220, 400)); 
         
-        // Center elements horizontally
         card.setAlignmentX(CENTER_ALIGNMENT);
         
-        // Pet image
         JPanel imagePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         imagePanel.setBackground(Color.WHITE);
         JLabel imageLabel = new JLabel();
         
-        // Load pet image if available
         ImageIcon petIcon = loadPetImage(petType);
         if (petIcon != null) {
             imageLabel.setIcon(petIcon);
@@ -196,24 +190,20 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         imagePanel.add(imageLabel);
         card.add(imagePanel);
         
-        // Pet name
         String displayName = getPetDisplayName(petType);
         JLabel nameLabel = new JLabel(displayName);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
         nameLabel.setAlignmentX(CENTER_ALIGNMENT);
         card.add(nameLabel);
         
-        // Difficulty
         JLabel diffLabel = new JLabel("Difficulty: " + difficulty);
         diffLabel.setForeground(themeColor);
         diffLabel.setFont(new Font("Arial", Font.BOLD, 12));
         diffLabel.setAlignmentX(CENTER_ALIGNMENT);
         card.add(diffLabel);
         
-        // Add spacing
         card.add(Box.createRigidArea(new Dimension(0, 10)));
         
-        // Stat bars
         JPanel statPanel1 = createSquareStatBar("Hunger Rate:", hungerValue, 5, themeColor);
         JPanel statPanel2 = createSquareStatBar("Energy Need:", sleepValue, 5, themeColor);
         JPanel statPanel3 = createSquareStatBar("Mood:", happyValue, 5, themeColor);
@@ -226,26 +216,20 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         card.add(statPanel2);
         card.add(statPanel3);
         
-        // Add spacing
         card.add(Box.createRigidArea(new Dimension(0, 10)));
         
-        // Pet description
-        // Use a fixed width that matches the card width (minus padding)
         JLabel descLabel = new JLabel("<html><div style='width:200px; text-align:center'>" + description + "</div></html>");
         descLabel.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        // *** WRAP in a centering Panel ***
-        JPanel descWrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Use FlowLayout for centering
-        descWrapperPanel.setBackground(Color.WHITE); // Match card background
+        JPanel descWrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); 
+        descWrapperPanel.setBackground(Color.WHITE); 
         descWrapperPanel.add(descLabel);
-        descWrapperPanel.setAlignmentX(CENTER_ALIGNMENT); // Align the wrapper panel within the BoxLayout
+        descWrapperPanel.setAlignmentX(CENTER_ALIGNMENT); 
         
-        // Make sure the wrapper panel takes full width
         descWrapperPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, descWrapperPanel.getPreferredSize().height));
 
-        card.add(descWrapperPanel); // NEW: Add the wrapper panel to the card
+        card.add(descWrapperPanel);
         
-        // Pet selection radio button
         JRadioButton selectButton = new JRadioButton();
         selectButton.setBackground(Color.WHITE);
         selectButton.setAlignmentX(CENTER_ALIGNMENT);
@@ -257,10 +241,9 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         
         petTypeGroup.add(selectButton);
         
-        // Store references to the radio buttons
         if (petType.equals("friendly_robot")) {
             roboFriendRadio = selectButton;
-            roboFriendRadio.setSelected(true); // Default selection
+            roboFriendRadio.setSelected(true); 
         } else if (petType.equals("balanced_robot")) {
             mechaMateRadio = selectButton;
         } else if (petType.equals("challenging_robot")) {
@@ -276,18 +259,15 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         JPanel statPanel = new JPanel(new BorderLayout(5, 0));
         statPanel.setBackground(Color.WHITE);
         
-        // Label on left side
         JLabel label = new JLabel(labelText);
         label.setFont(new Font("Arial", Font.PLAIN, 12));
         statPanel.add(label, BorderLayout.WEST);
         
-        // Stat blocks in center
         JPanel blocksPanel = new JPanel(new GridLayout(1, maxValue, 2, 0));
         blocksPanel.setBackground(Color.WHITE);
         
         for (int i = 0; i < maxValue; i++) {
             JPanel block = new JPanel();
-            // Make blocks square with increased size
             block.setPreferredSize(new Dimension(30, 30));
             block.setMinimumSize(new Dimension(30, 30));
             
@@ -302,18 +282,15 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         
         statPanel.add(blocksPanel, BorderLayout.CENTER);
         
-        // Add some padding around the stat panel
         statPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         
         return statPanel;
     }
     
-    /** Loads an ImageIcon for the specified pet type */
     private ImageIcon loadPetImage(String petType) {
         if (petType == null) return null;
         
         String imagePath;
-        // Use specific paths for each robot type
         switch (petType) {
             case "friendly_robot":
                 imagePath = "/images/pets/friendly_robot/friendly_robot.png";
@@ -332,20 +309,16 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         URL imageURL = getClass().getResource(imagePath);
         if (imageURL != null) {
             ImageIcon icon = new ImageIcon(imageURL);
-            // Resize the image to fit the card better
             return new ImageIcon(icon.getImage().getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH));
         } else {
-            System.err.println("Warning: Could not load image for " + petType + " at path: " + imagePath);
             return null;
         }
     }
 
-    /** Helper to get the string representation of the selected pet type */
     private String getSelectedPetType() {
         return selectedPetType;
     }
 
-    /** Get a user-friendly display name for the pet type */
     private String getPetDisplayName(String petType) {
         switch (petType) {
             case "friendly_robot": return "RoboFriend";
@@ -379,7 +352,6 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
                  return;
             }
 
-            System.out.println("Creating pet: Name=" + petName + ", Type=" + selectedType);
             Pet newPet = new Pet(petName, selectedType);
 
             if (startGameCallback != null) {
