@@ -841,12 +841,12 @@ public class GameplayPanel extends JPanel implements ActionListener {
                                   + state.name().substring(1).toLowerCase();
     
         // If the pet is in NORMAL state, the file is "<petType>.png"
-        // Otherwise, the file is "<petType>_<CapitalizedState>.jpeg"
+        // Otherwise, the file is "<petType>_<CapitalizedState>.png"
         String fileName;
         if (state == PetState.NORMAL) {
             fileName = petType + ".png"; 
         } else {
-            fileName = petType + "_" + capitalizedState + ".jpeg";
+            fileName = petType + "_" + capitalizedState + ".png";
         }
     
         // Now build the full resource path. 
