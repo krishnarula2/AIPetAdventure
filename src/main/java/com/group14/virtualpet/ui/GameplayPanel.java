@@ -10,8 +10,8 @@ import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RadialGradientPaint;
 import java.awt.MultipleGradientPaint;
+import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,17 +21,22 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.border.TitledBorder;
 
@@ -42,6 +47,7 @@ import com.group14.virtualpet.model.Item;
 import com.group14.virtualpet.model.Pet;
 import com.group14.virtualpet.model.PetState;
 import com.group14.virtualpet.state.GameState;
+import com.group14.virtualpet.util.AudioManager;
 import com.group14.virtualpet.util.SaveLoadUtil;
 
 public class GameplayPanel extends JPanel implements ActionListener {
@@ -67,6 +73,13 @@ public class GameplayPanel extends JPanel implements ActionListener {
             new GiftItem("Sparkling Jewel", 60)
     );
     private static final Random random = new Random();
+
+    // Add keyboard control constants
+    private static final char KEY_FEED = 'F';
+    private static final char KEY_PLAY = 'P';
+    private static final char KEY_SLEEP = 'S';
+    private static final char KEY_GIFT = 'G';
+    private static final char KEY_EXERCISE = 'E';
 
     private Pet currentPet;
     private Inventory playerInventory;
@@ -101,6 +114,9 @@ public class GameplayPanel extends JPanel implements ActionListener {
         setOpaque(true);
         setBackground(new Color(240, 242, 245));
 
+        // Add key bindings
+        setupKeyBindings();
+
         // Create the info panel (right side)
         JPanel infoPanel = createInfoPanel();
         add(infoPanel, BorderLayout.EAST);
@@ -118,6 +134,40 @@ public class GameplayPanel extends JPanel implements ActionListener {
         gameTimer.setInitialDelay(0);
         spriteTimer = new Timer(500, this);
         spriteTimer.setInitialDelay(500);
+    }
+
+    private void setupKeyBindings() {
+        // Make the panel focusable to receive key events
+        setFocusable(true);
+        
+        // Create input and action maps
+        InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = getActionMap();
+        
+        // Add key bindings for each control
+        addKeyBinding(inputMap, actionMap, KEY_FEED, "feed", e -> handleFeedCommand());
+        addKeyBinding(inputMap, actionMap, KEY_PLAY, "play", e -> handlePlayCommand());
+        addKeyBinding(inputMap, actionMap, KEY_SLEEP, "sleep", e -> handleGoToBedCommand());
+        addKeyBinding(inputMap, actionMap, KEY_GIFT, "gift", e -> handleGiveGiftCommand());
+        addKeyBinding(inputMap, actionMap, KEY_EXERCISE, "exercise", e -> handleExerciseCommand());
+    }
+
+    private void addKeyBinding(InputMap inputMap, ActionMap actionMap, char key, String actionKey, ActionListener action) {
+        // Add binding for both uppercase and lowercase
+        KeyStroke upperStroke = KeyStroke.getKeyStroke(Character.toUpperCase(key));
+        KeyStroke lowerStroke = KeyStroke.getKeyStroke(Character.toLowerCase(key));
+        
+        inputMap.put(upperStroke, actionKey);
+        inputMap.put(lowerStroke, actionKey);
+        
+        actionMap.put(actionKey, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (currentPet != null && currentPet.getCurrentState() != PetState.DEAD) {
+                    action.actionPerformed(e);
+                }
+            }
+        });
     }
 
     private JPanel createInfoPanel() {
@@ -450,6 +500,9 @@ public class GameplayPanel extends JPanel implements ActionListener {
         }
         // Command button actions
         else if (currentPet != null && currentPet.getCurrentState() != PetState.DEAD) {
+            // Play button click sound effect
+            AudioManager.getInstance().playSoundEffect("mainButtonSound.mp3");
+            
             if (source == feedButton) {
                 handleFeedCommand();
             } else if (source == goToBedButton) {
