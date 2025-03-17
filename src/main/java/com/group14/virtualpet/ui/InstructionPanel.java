@@ -92,6 +92,9 @@ public class InstructionPanel extends JPanel implements ActionListener {
             "• Exercise - Boosts Health, but lowers Sleep & Fullness.\n\n" +
             "Note: Some commands are disabled depending on pet state."));
         
+        // Add the new controls section
+        instructionsContainer.add(createControlsSection());
+        
         instructionsContainer.add(createSection("INVENTORY", 
             "Items (Food & Gifts) appear randomly over time.\n" +
             "Collect and use them to care for your pet."));
@@ -144,6 +147,87 @@ public class InstructionPanel extends JPanel implements ActionListener {
         buttonPanel.add(backButton);
         
         add(buttonPanel, BorderLayout.SOUTH);
+    }
+    
+    /**
+     * Creates the controls section that shows keyboard shortcuts
+     */
+    private JPanel createControlsSection() {
+        JPanel sectionPanel = new JPanel();
+        sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
+        sectionPanel.setBackground(SECTION_COLOR);
+        sectionPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(5, 0, 5, 0),
+            BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+                BorderFactory.createEmptyBorder(15, 20, 15, 20)
+            )
+        ));
+        sectionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        sectionPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 500));
+        
+        // Section title
+        JLabel titleLabel = new JLabel("KEYBOARD SHORTCUTS");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setForeground(HEADER_COLOR);
+        titleLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        // Create a panel for the controls grid
+        JPanel controlsGrid = new JPanel();
+        controlsGrid.setLayout(new BoxLayout(controlsGrid, BoxLayout.Y_AXIS));
+        controlsGrid.setBackground(SECTION_COLOR);
+        controlsGrid.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        // Add each control entry with spacing
+        controlsGrid.add(createControlEntry("Feed Pet", "Shortcut to feed your pet", "F"));
+        controlsGrid.add(Box.createRigidArea(new Dimension(0, 15)));
+        controlsGrid.add(createControlEntry("Play with Pet", "Shortcut to play with your pet", "P"));
+        controlsGrid.add(Box.createRigidArea(new Dimension(0, 15)));
+        controlsGrid.add(createControlEntry("Sleep Mode", "Shortcut to make your pet sleep", "S"));
+        controlsGrid.add(Box.createRigidArea(new Dimension(0, 15)));
+        controlsGrid.add(createControlEntry("Give Gift", "Shortcut to give your pet a gift", "G"));
+        controlsGrid.add(Box.createRigidArea(new Dimension(0, 15)));
+        controlsGrid.add(createControlEntry("Exercise", "Shortcut to exercise your pet", "E"));
+        
+        sectionPanel.add(titleLabel);
+        sectionPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        sectionPanel.add(controlsGrid);
+        
+        return sectionPanel;
+    }
+    
+    /**
+     * Creates a control entry with label, description, and key binding
+     */
+    private JPanel createControlEntry(String label, String description, String key) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        
+        JPanel labelPanel = new JPanel(new BorderLayout());
+        labelPanel.setOpaque(false);
+        
+        JLabel nameLabel = new JLabel(label);
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        
+        JLabel descLabel = new JLabel(description);
+        descLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        descLabel.setForeground(Color.GRAY);
+        
+        labelPanel.add(nameLabel, BorderLayout.NORTH);
+        labelPanel.add(descLabel, BorderLayout.CENTER);
+        
+        JLabel keyLabel = new JLabel(key);
+        keyLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        keyLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        keyLabel.setPreferredSize(new Dimension(30, 30));
+        keyLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        keyLabel.setBackground(new Color(245, 245, 245));
+        keyLabel.setOpaque(true);
+        
+        panel.add(labelPanel, BorderLayout.WEST);
+        panel.add(keyLabel, BorderLayout.EAST);
+        
+        return panel;
     }
     
     /**

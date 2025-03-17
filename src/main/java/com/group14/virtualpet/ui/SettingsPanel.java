@@ -34,8 +34,6 @@ public class SettingsPanel extends JPanel implements ActionListener {
     // Sound settings
     private JCheckBox backgroundMusicCheckbox;
     
-    // Controls are created dynamically in createControlEntry method
-    
     // Buttons
     private final JButton backButton;
 
@@ -64,10 +62,6 @@ public class SettingsPanel extends JPanel implements ActionListener {
         
         // Add sound settings section
         contentPanel.add(createSoundSettingsPanel());
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-        
-        // Add controls section
-        contentPanel.add(createControlsPanel());
         
         add(contentPanel, BorderLayout.CENTER);
         
@@ -151,61 +145,6 @@ public class SettingsPanel extends JPanel implements ActionListener {
         musicPanel.add(backgroundMusicCheckbox, BorderLayout.EAST);
         
         panel.add(musicPanel);
-        
-        return panel;
-    }
-    
-    /**
-     * Creates the controls panel
-     */
-    private JPanel createControlsPanel() {
-        JPanel panel = createSectionPanel("Controls");
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        
-        // Create control entries
-        panel.add(createControlEntry("Feed Pet", "Shortcut to feed your pet", "F"));
-        panel.add(Box.createRigidArea(new Dimension(0, 15)));
-        panel.add(createControlEntry("Play with Pet", "Shortcut to play with your pet", "P"));
-        panel.add(Box.createRigidArea(new Dimension(0, 15)));
-        panel.add(createControlEntry("Sleep Mode", "Shortcut to make your pet sleep", "S"));
-        panel.add(Box.createRigidArea(new Dimension(0, 15)));
-        panel.add(createControlEntry("Give Gift", "Shortcut to give your pet a gift", "G"));
-        panel.add(Box.createRigidArea(new Dimension(0, 15)));
-        panel.add(createControlEntry("Exercise", "Shortcut to exercise your pet", "E"));
-        
-        return panel;
-    }
-    
-    /**
-     * Creates a control entry with label, description, and key binding
-     */
-    private JPanel createControlEntry(String label, String description, String key) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
-        
-        JPanel labelPanel = new JPanel(new BorderLayout());
-        labelPanel.setOpaque(false);
-        
-        JLabel nameLabel = new JLabel(label);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        
-        JLabel descLabel = new JLabel(description);
-        descLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        descLabel.setForeground(Color.GRAY);
-        
-        labelPanel.add(nameLabel, BorderLayout.NORTH);
-        labelPanel.add(descLabel, BorderLayout.CENTER);
-        
-        JLabel keyLabel = new JLabel(key);
-        keyLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        keyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        keyLabel.setPreferredSize(new Dimension(30, 30));
-        keyLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        keyLabel.setBackground(new Color(245, 245, 245));
-        keyLabel.setOpaque(true);
-        
-        panel.add(labelPanel, BorderLayout.WEST);
-        panel.add(keyLabel, BorderLayout.EAST);
         
         return panel;
     }
