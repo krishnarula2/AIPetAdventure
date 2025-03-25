@@ -40,6 +40,13 @@
         <version>${jackson.version}</version>
     </dependency>
 
+    <!-- JavaLayer for MP3 playback -->
+    <dependency>
+        <groupId>javazoom</groupId>
+        <artifactId>jlayer</artifactId>
+        <version>1.0.1</version>
+    </dependency>
+
     <!-- Java Swing is part of standard Java SE, no explicit dependency needed unless using specific features from addons -->
 
   </dependencies>
