@@ -1,6 +1,10 @@
 package com.group14.virtualpet.model;
 
+import com.group14.virtualpet.state.AngryState;
+import com.group14.virtualpet.state.DeadState;
+import com.group14.virtualpet.state.HungryState;
 import com.group14.virtualpet.state.NormalState;
+import com.group14.virtualpet.state.SleepingState;
 import com.group14.virtualpet.state.State;
 // TODO: Add imports for VitalStatistic, etc. when needed
 
@@ -140,27 +144,63 @@ public abstract class Pet {
     /**
      * Checks vital statistics and triggers state changes if necessary.
      * Order matters here - e.g., Dead state takes precedence.
+     * Ensures transitions don't happen if already in a terminal state (Dead, Sleeping).
      */
     private void checkStateTransitions() {
-        // TODO: Refine this logic, especially handling multiple low stats or state interactions
-        if (health.isZero()) {
-            // setState(new DeadState()); // Need DeadState instance
-        } else if (sleep.isZero()) {
-            // Apply health penalty
-            // health.decrease(SOME_PENALTY_VALUE);
-            // setState(new SleepingState()); // Need SleepingState instance
-        } else if (fullness.isZero()) {
-            // Don't necessarily change state immediately, HungryState logic handles effects
-            // But ensure if not already hungry, maybe transition?
-            // This logic might belong IN the NormalState.update() or here. Requires thought.
-        } else if (happiness.isZero()) {
-            // setState(new AngryState()); // Need AngryState instance
+        // Don't transition if already dead or sleeping (these states manage their own exit/non-exit)
+        if (currentState instanceof DeadState || currentState instanceof SleepingState) {
+            return;
         }
-        // If none of the above, and not already normal, potentially return to normal?
-        // else if (!(currentState instanceof NormalState)) {
-        //     // Add conditions for returning to normal (e.g., stats above thresholds)
-        //     // setState(new NormalState());
-        // }
+
+        // Highest precedence: Death
+        if (health.isZero()) {
+            if (!(currentState instanceof DeadState)) {
+                 // TODO: Use factory/singleton instance
+                setState(new DeadState());
+            }
+            return; // If dead, no other transitions matter
+        }
+
+        // Next precedence: Falling asleep from exhaustion
+        if (sleep.isZero()) {
+            if (!(currentState instanceof SleepingState)) {
+                System.out.println(name + " collapses from exhaustion! Health suffers.");
+                // Apply health penalty (Rule 3.1.6 b)
+                health.decrease(5.0); // Placeholder penalty value
+                // TODO: Use factory/singleton instance
+                setState(new SleepingState());
+            }
+            return; // If falling asleep, no other transitions check needed this tick
+        }
+
+        // Lower precedence states: Angry and Hungry. They can potentially co-exist conceptually,
+        // but the state machine handles one at a time. Angry might take precedence over Hungry?
+        // Let's check Angry first.
+        if (happiness.isZero()) {
+             if (!(currentState instanceof AngryState)) {
+                 System.out.println(name + " becomes angry due to zero happiness!");
+                 // TODO: Use factory/singleton instance
+                 setState(new AngryState());
+                 // Note: AngryState handles its own recovery check
+             }
+             // Even if angry, we might *also* be hungry, let hungry check run if needed
+             // Or decide if Angry blocks checking for Hungry state transition? Let's allow both for now.
+        }
+
+        // Check for Hunger
+        if (fullness.isZero()) {
+            if (!(currentState instanceof HungryState || currentState instanceof AngryState)) {
+                 // Avoid transitioning to Hungry if already Angry (Angry takes precedence)
+                 System.out.println(name + " becomes hungry due to zero fullness!");
+                 // TODO: Use factory/singleton instance
+                 setState(new HungryState());
+                 // Note: HungryState handles penalties and recovery check
+            }
+        }
+
+        // Implicit: If none of the above conditions are met, and the pet was in a state
+        // like Angry or Hungry, those states' update/action methods handle returning to Normal.
+        // No explicit transition back to NormalState is needed here, preventing potential loops.
     }
 
     // TODO: Add abstract methods for pet-specific behaviors if any (e.g., getSpeciesSpecificSound())
