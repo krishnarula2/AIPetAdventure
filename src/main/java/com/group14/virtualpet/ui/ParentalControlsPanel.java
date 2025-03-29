@@ -6,9 +6,11 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer; // Added for formatting time
+import java.util.function.Consumer;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -20,10 +22,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.SpinnerDateModel;
 import javax.swing.SwingConstants;
 
-import com.group14.virtualpet.Main; // For card name constants
+import com.group14.virtualpet.Main;
+import com.group14.virtualpet.MainFrame;
 import com.group14.virtualpet.model.Pet;
 import com.group14.virtualpet.state.GameState;
 import com.group14.virtualpet.util.SaveLoadUtil;
@@ -54,11 +57,15 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
     private JButton reviveButton;
     // Time Limit Components (Req 3.1.11.1)
     private JCheckBox enableTimeLimitCheckbox;
-    private JSpinner timeLimitSpinner; // In minutes
+    private JSpinner startTimeSpinner;
+    private JSpinner endTimeSpinner;
     private JButton applyTimeLimitButton;
     // Statistics Components (Req 3.1.11.2)
     private JLabel totalPlaytimeLabel;
+    private JLabel averageSessionLabel;
     private JButton resetStatsButton;
+    // Play as Parent Section
+    private JButton playAsParentButton;
 
     public ParentalControlsPanel(Consumer<String> navigateCallback) {
         this.navigateCallback = navigateCallback;
@@ -74,7 +81,7 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
         JPanel passwordPanel = createPasswordPromptPanel();
         internalPanel.add(passwordPanel, PASSWORD_PROMPT_CARD);
 
-        // --- Create Content Panel (Initially empty placeholders) ---
+        // --- Create Content Panel ---
         JPanel contentPanel = createContentPanel();
         internalPanel.add(contentPanel, CONTENT_CARD);
 
@@ -90,7 +97,7 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50)); // Padding
 
-        JLabel promptLabel = new JLabel("Enter Parental Controls Password:", SwingConstants.CENTER);
+        JLabel promptLabel = new JLabel("Enter Parent Password:", SwingConstants.CENTER);
         promptLabel.setFont(new Font("Arial", Font.BOLD, 16));
         panel.add(promptLabel, BorderLayout.NORTH);
 
@@ -98,7 +105,8 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
         panel.add(passwordField, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(); // Flow layout
-        submitPasswordButton = new JButton("Submit");
+        submitPasswordButton = new JButton("Verify");
+        submitPasswordButton.setBackground(java.awt.Color.GREEN);
         backFromPasswordButton = new JButton("Back to Main Menu");
         submitPasswordButton.addActionListener(this);
         backFromPasswordButton.addActionListener(this);
@@ -130,35 +138,78 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
         // Dropdown will be populated when panel is shown
         revivePanel.add(saveFileDropdown);
         reviveButton = new JButton("Revive Selected Pet");
+        reviveButton.setBackground(java.awt.Color.GREEN);
+        reviveButton.setToolTipText("Revive the pet and reset its stats.");
         reviveButton.addActionListener(this);
         revivePanel.add(reviveButton);
         controlsArea.add(revivePanel);
 
-        // --- Time Limits Section (Req 3.1.11.1) ---
+        // --- Time Limitations Section (Req 3.1.11.1) ---
         JPanel timeLimitsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        timeLimitsPanel.setBorder(BorderFactory.createTitledBorder("Time Limits"));
-        enableTimeLimitCheckbox = new JCheckBox("Enable Max Playtime per Session");
+        timeLimitsPanel.setBorder(BorderFactory.createTitledBorder("Time Limitations"));
+        enableTimeLimitCheckbox = new JCheckBox("Enable Playtime Restrictions");
         timeLimitsPanel.add(enableTimeLimitCheckbox);
-        timeLimitsPanel.add(new JLabel("Limit (minutes):"));
-        // Spinner for minutes (1 to 180, default 30)
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(30, 1, 180, 1);
-        timeLimitSpinner = new JSpinner(spinnerModel);
-        timeLimitsPanel.add(timeLimitSpinner);
+
+        // Start Time Spinner
+        timeLimitsPanel.add(new JLabel("Start Time:"));
+        startTimeSpinner = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor startEditor = new JSpinner.DateEditor(startTimeSpinner, "HH:mm");
+        startTimeSpinner.setEditor(startEditor);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            startTimeSpinner.setValue(sdf.parse("08:00"));
+        } catch (Exception ex) { }
+        timeLimitsPanel.add(startTimeSpinner);
+        JLabel startInfoLabel = new JLabel("ℹ");
+        startInfoLabel.setToolTipText("Set the allowed play start time (24-hour format).");
+        timeLimitsPanel.add(startInfoLabel);
+
+        // End Time Spinner
+        timeLimitsPanel.add(new JLabel("End Time:"));
+        endTimeSpinner = new JSpinner(new SpinnerDateModel());
+        JSpinner.DateEditor endEditor = new JSpinner.DateEditor(endTimeSpinner, "HH:mm");
+        endTimeSpinner.setEditor(endEditor);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            endTimeSpinner.setValue(sdf.parse("22:00"));
+        } catch (Exception ex) { }
+        timeLimitsPanel.add(endTimeSpinner);
+        JLabel endInfoLabel = new JLabel("ℹ");
+        endInfoLabel.setToolTipText("Set the allowed play end time (24-hour format).");
+        timeLimitsPanel.add(endInfoLabel);
+
+        // Apply Button
         applyTimeLimitButton = new JButton("Apply Time Limit");
+        applyTimeLimitButton.setBackground(java.awt.Color.GREEN);
         applyTimeLimitButton.addActionListener(this);
         timeLimitsPanel.add(applyTimeLimitButton);
         controlsArea.add(timeLimitsPanel);
 
-        // --- Statistics Section (Req 3.1.11.2) ---
+        // --- Play Time Statistics Section (Req 3.1.11.2) ---
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        statsPanel.setBorder(BorderFactory.createTitledBorder("Usage Statistics"));
+        statsPanel.setBorder(BorderFactory.createTitledBorder("Play Time Statistics"));
         totalPlaytimeLabel = new JLabel("Total Playtime: (Select Save)");
+        totalPlaytimeLabel.setForeground(java.awt.Color.GREEN);
         statsPanel.add(totalPlaytimeLabel);
+        averageSessionLabel = new JLabel("Average Session: (Select Save)");
+        averageSessionLabel.setForeground(java.awt.Color.GREEN);
+        statsPanel.add(averageSessionLabel);
         resetStatsButton = new JButton("Reset Playtime Stats");
+        resetStatsButton.setBackground(java.awt.Color.GREEN);
         resetStatsButton.addActionListener(this);
         statsPanel.add(resetStatsButton);
-        // TODO: Add more stats like average session time, last played etc. if desired
         controlsArea.add(statsPanel);
+
+        // --- Play as Parent Section ---
+        JPanel playAsParentPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        playAsParentButton = new JButton("Play as Parent");
+        playAsParentButton.setBackground(java.awt.Color.BLUE);
+        // Changed text color to black for better visibility
+        playAsParentButton.setForeground(java.awt.Color.BLACK);
+        playAsParentButton.setToolTipText("Start playing without restrictions.");
+        playAsParentButton.addActionListener(this);
+        playAsParentPanel.add(playAsParentButton);
+        controlsArea.add(playAsParentPanel);
 
         panel.add(controlsArea, BorderLayout.CENTER);
 
@@ -186,7 +237,7 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
             saveFileDropdown.addItem("No saves found");
             saveFileDropdown.setEnabled(false);
             reviveButton.setEnabled(false);
-            applyTimeLimitButton.setEnabled(false); // Disable apply buttons if no saves
+            applyTimeLimitButton.setEnabled(false);
             resetStatsButton.setEnabled(false);
             updateStatsDisplay(null); // Clear stats display
         } else {
@@ -196,7 +247,7 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
             applyTimeLimitButton.setEnabled(true);
             resetStatsButton.setEnabled(true);
             // Add listener to update UI when selection changes
-            saveFileDropdown.addActionListener(this); // Trigger actionPerformed on selection
+            saveFileDropdown.addActionListener(this);
             updateUIForSelectedSave(); // Initial update for the default selection
         }
     }
@@ -210,26 +261,25 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
             String enteredPassword = new String(passwordField.getPassword());
             if (CORRECT_PASSWORD.equals(enteredPassword)) {
                 // Correct password, show content and populate saves
-                populateSaveFiles(); // Populate dropdown when showing content
+                populateSaveFiles();
                 cardLayout.show(internalPanel, CONTENT_CARD);
             } else {
-                // Incorrect password
                 JOptionPane.showMessageDialog(this, "Incorrect password.", "Access Denied", JOptionPane.ERROR_MESSAGE);
-                passwordField.setText(""); // Clear field
+                passwordField.setText("");
             }
         } else if (source == backFromPasswordButton || source == backFromContentButton) {
-            // Navigate back to main menu
             if (navigateCallback != null) {
                 navigateCallback.accept(Main.MAIN_MENU_CARD);
             }
         } else if (source == reviveButton) {
-            handleRevivePet(); // Handle revive action
+            handleRevivePet();
         } else if (source == applyTimeLimitButton) {
-            handleApplyTimeLimit(); // Handle apply time limit action
+            handleApplyTimeLimit();
         } else if (source == resetStatsButton) {
-            handleResetStats(); // Handle reset statistics
+            handleResetStats();
+        } else if (source == playAsParentButton) {
+            handlePlayAsParent();
         } else if (source == saveFileDropdown) {
-            // Update Time Limit controls and Stats display when selection changes
             updateUIForSelectedSave();
         }
     }
@@ -242,23 +292,17 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
             return;
         }
         String selectedSave = selectedItem.toString();
-
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Are you sure you want to revive the pet in '" + selectedSave + "'?\n" +
                 "This will reset its stats and save the changes.",
                 "Confirm Revive",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
-
         if (confirm == JOptionPane.YES_OPTION) {
-            System.out.println("Attempting to revive pet in: " + selectedSave);
             GameState loadedState = SaveLoadUtil.loadGame(selectedSave);
             if (loadedState != null && loadedState.getPet() != null) {
                 Pet petToRevive = loadedState.getPet();
-                petToRevive.revive(); // Call the revive method on the pet
-                System.out.println("Pet " + petToRevive.getName() + " revived.");
-
-                // Re-save the modified state
+                petToRevive.revive();
                 boolean saveSuccess = SaveLoadUtil.saveGame(loadedState, selectedSave);
                 if (saveSuccess) {
                     JOptionPane.showMessageDialog(this, "Pet in '" + selectedSave + "' has been revived successfully!", "Revive Success", JOptionPane.INFORMATION_MESSAGE);
@@ -275,38 +319,31 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
     private void handleApplyTimeLimit() {
         Object selectedItem = saveFileDropdown.getSelectedItem();
         if (selectedItem == null || "No saves found".equals(selectedItem.toString())) {
-            JOptionPane.showMessageDialog(this, "Please select a save file to apply the limit to.", "Time Limit Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a save file to apply the time limit to.", "Time Limit Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
         String selectedSave = selectedItem.toString();
         boolean enabled = enableTimeLimitCheckbox.isSelected();
-        int limitMinutes = (int) timeLimitSpinner.getValue();
-
+        Date startTime = (Date) startTimeSpinner.getValue();
+        Date endTime = (Date) endTimeSpinner.getValue();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String confirmMessage = "Apply time limit settings to '" + selectedSave + "'?\n" +
+                "Enabled: " + enabled + "\n" +
+                (enabled ? "Start Time: " + sdf.format(startTime) + "\nEnd Time: " + sdf.format(endTime) : "");
         int confirm = JOptionPane.showConfirmDialog(this,
-                "Apply time limit settings to '" + selectedSave + "'?\n" +
-                "Enabled: " + enabled + (enabled ? "\\nLimit: " + limitMinutes + " minutes" : ""),
+                confirmMessage,
                 "Confirm Time Limit",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.INFORMATION_MESSAGE);
-
         if (confirm == JOptionPane.YES_OPTION) {
-            System.out.println("Applying time limit to: " + selectedSave + ", Enabled: " + enabled + ", Limit: " + limitMinutes + " min");
-
-            // Load the game state
             GameState loadedState = SaveLoadUtil.loadGame(selectedSave);
             if (loadedState != null) {
-                // Modify the game state using the new setters
                 loadedState.setTimeLimitEnabled(enabled);
-                loadedState.setMaxPlaytimeMinutes(limitMinutes);
-                // We don't need to reset session time here; it's handled on game start/load.
-                System.out.println("GameState time limit settings updated.");
-
-                // Re-save the modified state
+                loadedState.setPlaytimeStart(startTime);
+                loadedState.setPlaytimeEnd(endTime);
                 boolean saveSuccess = SaveLoadUtil.saveGame(loadedState, selectedSave);
                 if (saveSuccess) {
                     JOptionPane.showMessageDialog(this, "Time limit settings applied successfully to '" + selectedSave + "'!", "Time Limit Success", JOptionPane.INFORMATION_MESSAGE);
-                    // Optionally, could update the UI if we loaded the state's settings into the controls
-                    // when the dropdown selection changes.
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to save the time limit settings.", "Time Limit Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -316,43 +353,54 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
         }
     }
 
-    /** Updates the Time Limit controls and Stats Display based on the selected save file */
+    /** Updates the Time Limit controls and Statistics display based on the selected save file */
     private void updateUIForSelectedSave() {
         Object selectedItem = saveFileDropdown.getSelectedItem();
         if (selectedItem == null || "No saves found".equals(selectedItem.toString())) {
-            // Disable controls if no valid save selected
             enableTimeLimitCheckbox.setSelected(false);
-            timeLimitSpinner.setValue(30); // Reset to default
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                startTimeSpinner.setValue(sdf.parse("08:00"));
+                endTimeSpinner.setValue(sdf.parse("22:00"));
+            } catch (Exception ex) { }
             updateStatsDisplay(null);
             return;
         }
         String selectedSave = selectedItem.toString();
         GameState loadedState = SaveLoadUtil.loadGame(selectedSave);
-
         if (loadedState != null) {
-            // Update Time Limit controls
             enableTimeLimitCheckbox.setSelected(loadedState.isTimeLimitEnabled());
-            timeLimitSpinner.setValue(loadedState.getMaxPlaytimeMinutes());
-
-            // Update Statistics display
+            if (loadedState.getPlaytimeStart() != null) {
+                startTimeSpinner.setValue(loadedState.getPlaytimeStart());
+            }
+            if (loadedState.getPlaytimeEnd() != null) {
+                endTimeSpinner.setValue(loadedState.getPlaytimeEnd());
+            }
             updateStatsDisplay(loadedState);
         } else {
-            // Handle case where save file couldn't be loaded (show error? clear UI?)
-            System.err.println("Could not load save '+selectedSave+' to update UI.");
+            System.err.println("Could not load save '" + selectedSave + "' to update UI.");
             enableTimeLimitCheckbox.setSelected(false);
-            timeLimitSpinner.setValue(30);
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                startTimeSpinner.setValue(sdf.parse("08:00"));
+                endTimeSpinner.setValue(sdf.parse("22:00"));
+            } catch (Exception ex) { }
             updateStatsDisplay(null);
         }
     }
 
-    /** Updates the statistics label based on the loaded GameState */
+    /** Updates the statistics labels based on the loaded GameState */
     private void updateStatsDisplay(GameState state) {
         if (state != null) {
             long totalMillis = state.getTotalPlaytimeMillis();
             String formattedTime = formatDuration(totalMillis);
             totalPlaytimeLabel.setText("Total Playtime: " + formattedTime);
+            long avgMillis = state.getAverageSessionMillis(); // Assumes GameState provides this method
+            String avgFormatted = formatDuration(avgMillis);
+            averageSessionLabel.setText("Average Session: " + avgFormatted);
         } else {
             totalPlaytimeLabel.setText("Total Playtime: (Select Save)");
+            averageSessionLabel.setText("Average Session: (Select Save)");
         }
     }
 
@@ -372,23 +420,19 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
             return;
         }
         String selectedSave = selectedItem.toString();
-
         int confirm = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to reset ALL playtime statistics for '" + selectedSave + "'?\n" +
-                "This cannot be undone.",
+                "Are you sure you want to reset ALL playtime statistics for '" + selectedSave + "'?\nThis cannot be undone.",
                 "Confirm Reset Statistics",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
-
         if (confirm == JOptionPane.YES_OPTION) {
             GameState loadedState = SaveLoadUtil.loadGame(selectedSave);
             if (loadedState != null) {
-                loadedState.resetPlaytimeStats(); // Call the reset method
-
+                loadedState.resetPlaytimeStats();
                 boolean saveSuccess = SaveLoadUtil.saveGame(loadedState, selectedSave);
                 if (saveSuccess) {
                     JOptionPane.showMessageDialog(this, "Playtime statistics reset successfully for '" + selectedSave + "'!", "Reset Success", JOptionPane.INFORMATION_MESSAGE);
-                    updateStatsDisplay(loadedState); // Update the display
+                    updateStatsDisplay(loadedState);
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to save the reset statistics.", "Reset Stats Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -397,4 +441,49 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
             }
         }
     }
-} 
+
+   /** Handles the Play as Parent button action. */
+private void handlePlayAsParent() {
+    GameState gameState = null;
+    Object selectedItem = saveFileDropdown.getSelectedItem();
+
+    // 1. If a valid save is selected, load it and disable time limits.
+    if (selectedItem != null && !"No saves found".equals(selectedItem.toString())) {
+        gameState = SaveLoadUtil.loadGame(selectedItem.toString());
+        if (gameState != null) {
+            gameState.setTimeLimitEnabled(false);
+            SaveLoadUtil.saveGame(gameState, selectedItem.toString());
+        }
+    }
+
+    // 2. If no valid save loaded, create a new default GameState.
+    if (gameState == null) {
+        // Adjust this to match your actual Pet/Inventory constructors.
+        gameState = new GameState(
+            new com.group14.virtualpet.model.Pet("ParentPet", "DefaultType"),
+            new com.group14.virtualpet.model.Inventory(),
+            0
+        );
+        SaveLoadUtil.saveGame(gameState, "parent_default_save");
+    }
+
+    // 3. Show a confirmation message.
+    JOptionPane.showMessageDialog(this,
+        "Starting game as Parent (no restrictions applied).",
+        "Play as Parent",
+        JOptionPane.INFORMATION_MESSAGE
+    );
+
+    // 4. Pass this GameState to the gameplay panel and switch screens.
+    //    Example if your MainFrame has a method like loadAndSwitchToGameplay(GameState).
+    if (navigateCallback instanceof MainFrame) {
+        ((MainFrame) navigateCallback).loadAndSwitchToGameplay(gameState);
+    } else {
+        // Fallback: just navigate to the gameplay card (but you still need to set the GameState).
+        if (navigateCallback != null) {
+            navigateCallback.accept(Main.GAMEPLAY_CARD);
+        }
+    }
+}
+
+}
