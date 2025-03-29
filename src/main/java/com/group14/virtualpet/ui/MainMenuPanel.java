@@ -133,7 +133,7 @@ public class MainMenuPanel extends JPanel implements ActionListener {
         teamNumberLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JLabel developersLabel = new JLabel(
-            "Pragalvha Sharma • Aalyan Muhammad • Athul Charanthara • Krish Naula • Manav Joshi", 
+            "Pragalvha Sharma • Aalyan Muhammad • Athul Charanthara • Krish Narula • Manan Joshi", 
             SwingConstants.CENTER
         );
         developersLabel.setFont(new Font("Arial", Font.PLAIN, 12));

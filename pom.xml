@@ -12,8 +12,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <junit.jupiter.version>5.10.2</junit.jupiter.version>
     <jackson.version>2.17.0</jackson.version>
   </properties>
@@ -66,10 +66,7 @@
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
-          <release>17</release>
-          <compilerArgs>
-            <arg>--enable-preview</arg>
-          </compilerArgs>
+          <release>21</release>
         </configuration>
       </plugin>
       <!-- Maven Surefire Plugin for running tests -->
