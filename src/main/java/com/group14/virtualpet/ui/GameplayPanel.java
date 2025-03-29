@@ -273,14 +273,31 @@ public class GameplayPanel extends JPanel implements ActionListener {
 
     private void updatePetStatusDisplay() {
         if (currentPet == null) return;
+    
         petNameLabel.setText("Pet Name: " + currentPet.getName());
         scoreLabel.setText("Score: " + score);
         stateLabel.setText("State: " + currentPet.getCurrentState());
+    
+        // ✅ Emergency food logic
+        if (currentPet.getCurrentState() == PetState.HUNGRY) {
+            boolean hasFood = playerInventory.getAllItems().keySet().stream()
+                .anyMatch(item -> item instanceof FoodItem);
+            if (!hasFood) {
+                System.out.println("DEBUG: Pet is HUNGRY and has no food. Granting Emergency Ration.");
+                FoodItem emergencyFood = new FoodItem("Emergency Ration", 30);
+                playerInventory.addItem(emergencyFood, 1);
+                JOptionPane.showMessageDialog(this,
+                    "Your pet is starving! You've received an Emergency Ration.",
+                    "Emergency Food",
+                    JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    
         updateStatBar(healthBar, "Health", currentPet.getHealth(), currentPet.getMaxHealth());
         updateStatBar(sleepBar, "Sleep", currentPet.getSleep(), currentPet.getMaxSleep());
         updateStatBar(fullnessBar, "Fullness", currentPet.getFullness(), currentPet.getMaxFullness());
         updateStatBar(happinessBar, "Happiness", currentPet.getHappiness(), currentPet.getMaxHappiness());
-
+    
         // Update sprite if pet state has changed
         PetState currentState = currentPet.getCurrentState();
         if (currentState != lastDisplayedState) {
@@ -289,10 +306,12 @@ public class GameplayPanel extends JPanel implements ActionListener {
             spriteFlipFlop = false;
             updateSpriteImage();
         }
+    
         updateCommandAvailability();
         updateInventoryDisplay();
     }
-
+    
+    
     private void handlePetDeath() {
         gameTimer.stop();
         System.out.println("GAME OVER: " + currentPet.getName() + " has died.");
@@ -496,7 +515,17 @@ public class GameplayPanel extends JPanel implements ActionListener {
 
     private void grantRandomItem() {
         if (playerInventory != null && !AVAILABLE_ITEMS.isEmpty()) {
-            Item grantedItem = AVAILABLE_ITEMS.get(random.nextInt(AVAILABLE_ITEMS.size()));
+            Item grantedItem;
+            if (score % 2 == 0) {  // Prioritize food every second item
+                List<FoodItem> foodItems = AVAILABLE_ITEMS.stream()
+                        .filter(item -> item instanceof FoodItem)
+                        .map(item -> (FoodItem) item)
+                        .collect(Collectors.toList());
+                grantedItem = foodItems.get(random.nextInt(foodItems.size()));
+            } else {
+                grantedItem = AVAILABLE_ITEMS.get(random.nextInt(AVAILABLE_ITEMS.size()));
+            }
+    
             playerInventory.addItem(grantedItem, 1);
             System.out.println("Granted item: " + grantedItem.getName());
             JOptionPane.showMessageDialog(this,
@@ -506,6 +535,7 @@ public class GameplayPanel extends JPanel implements ActionListener {
             updateInventoryDisplay();
         }
     }
+    
 
     private void increaseScore(int amount) {
         this.score += amount;
