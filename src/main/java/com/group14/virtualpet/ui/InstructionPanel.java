@@ -58,52 +58,59 @@ public class InstructionPanel extends JPanel implements ActionListener {
 
     /** Provides the text content for the instructions panel. */
     private String getInstructionsContent() {
-        return "🐾 Welcome to Virtual Pet Adventure!\n\n" +
-               "🎯 Goal:\n" +
-               "Keep your virtual pet happy, healthy, and thriving!\n\n" +
-    
-               "📊 Pet Stats:\n" +
-               "• ❤️ Health – If it reaches 0, it's game over!\n" +
-               "• 💤 Sleep – Goes down over time. Let your pet rest to recover.\n" +
-               "• 🍗 Fullness – Your pet gets hungry! Feed it with food items.\n" +
-               "• 😊 Happiness – Pets need love! Boost it with gifts and playtime.\n\n" +
-    
-               "⚠️ Stat Warnings:\n" +
-               "Stats turn red when they drop below 25%. Keep an eye on them!\n\n" +
-    
-               "😺 Pet States:\n" +
-               "• ✅ Normal – Pet is doing well.\n" +
-               "• 😴 Sleeping – Pet is asleep. Commands are disabled.\n" +
-               "• 😫 Hungry – Fullness is 0. Health drops, and your pet becomes upset.\n" +
-               "• 😠 Angry – Happiness is 0. Most commands are ignored.\n" +
-               "• ☠️ Dead – Pet has died. You'll need to start a new game or load a save.\n\n" +
-    
-               "🕹️ Commands:\n" +
-               "• 🍖 Feed – Increases Fullness using food items.\n" +
-               "• 🛏️ Go to Bed – Recovers Sleep over time.\n" +
-               "• 🎁 Give Gift – Increases Happiness using gift items.\n" +
-               "• 🏥 Take to Vet – Restores Health. Has a cooldown.\n" +
-               "• 🎮 Play – Boosts Happiness. Has a cooldown.\n" +
-               "• 🏃 Exercise – Increases Health but uses up Sleep and Fullness.\n" +
-               "Commands may be disabled based on your pet’s state.\n\n" +
-    
-               "📦 Inventory:\n" +
-               "You’ll receive random items over time (Food & Gifts).\n" +
-               "Use these to interact with your pet effectively.\n\n" +
-    
-               "💾 Saving:\n" +
-               "Use the \"Save Game\" button to save your progress.\n" +
-               "Your pet's name is used for the save file.\n\n" +
-    
-               "🤖 Pet Types:\n" +
-               "• RoboFriend – Easiest, great for beginners.\n" +
-               "• MechaMate – Medium difficulty, balanced needs.\n" +
-               "• Tech Titan – Advanced challenge for experienced players.\n\n" +
-    
-               "🌟 Tip:\n" +
-               "Watch your pet closely and respond to its needs to keep it happy!\n\n" +
-               "Have fun caring for your digital companion!";
-    }
+    return "=== Welcome to Virtual Pet Adventure! ===\n\n" +
+           "GOAL:\n" +
+           "Keep your virtual pet happy, healthy, and thriving!\n\n" +
+
+           "------------------\n" +
+           "PET STATS:\n" +
+           "- Health    : Reaches 0 = Game Over.\n" +
+           "- Sleep     : Goes down over time. Let your pet rest.\n" +
+           "- Fullness  : Goes down over time. Feed your pet.\n" +
+           "- Happiness : Boost with gifts or playtime.\n\n" +
+
+           ">> Stats turn RED below 25%. Keep an eye on them!\n\n" +
+
+           "------------------\n" +
+           "PET STATES:\n" +
+           "- Normal   : Your pet is fine.\n" +
+           "- Sleeping : Recovering sleep. Commands disabled.\n" +
+           "- Hungry   : Fullness is 0. Health drops and mood worsens.\n" +
+           "- Angry    : Happiness is 0. Ignores most commands.\n" +
+           "- Dead     : Game Over. Load a save or start a new game.\n\n" +
+
+           "------------------\n" +
+           "COMMANDS:\n" +
+           "- Feed       : Increases Fullness (needs food).\n" +
+           "- Go to Bed  : Recovers Sleep.\n" +
+           "- Give Gift  : Boosts Happiness (needs gift).\n" +
+           "- Take to Vet: Increases Health (cooldown).\n" +
+           "- Play       : Boosts Happiness (cooldown).\n" +
+           "- Exercise   : Boosts Health, lowers Sleep & Fullness.\n\n" +
+           "* Some commands are disabled depending on pet state.\n\n" +
+
+           "------------------\n" +
+           "INVENTORY:\n" +
+           "Items (Food & Gifts) appear randomly over time.\n" +
+           "Use them to care for your pet.\n\n" +
+
+           "------------------\n" +
+           "SAVING:\n" +
+           "Click 'Save Game' to save progress.\n" +
+           "Your pet's name will be used for the save file.\n\n" +
+
+           "------------------\n" +
+           "PET TYPES:\n" +
+           "- RoboFriend : Easy. Great for beginners.\n" +
+           "- MechaMate  : Medium difficulty.\n" +
+           "- Tech Titan : Hard. Best for experienced players.\n\n" +
+
+           "------------------\n" +
+           "TIP:\n" +
+           "Watch your pet and use commands to keep it happy!\n\n" +
+           "=== Have fun caring for your digital companion! ===";
+}
+
     
 
     @Override
