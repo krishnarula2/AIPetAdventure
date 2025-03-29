@@ -2,20 +2,20 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.yourcompany</groupId> <!-- TODO: Change this -->
-  <artifactId>virtual-pet-group14</artifactId> <!-- TODO: Change this if desired -->
-  <version>1.0-SNAPSHOT</version> <!-- TODO: Change this -->
+  <groupId>com.group14</groupId>
+  <artifactId>virtual-pet</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Virtual Pet Game - Group 14</name>
-  <!-- TODO: Add project URL if applicable <url>http://maven.apache.org</url> -->
+  <description>A virtual pet game for CS2212 at Western University</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
-    <junit.jupiter.version>5.10.2</junit.jupiter.version> <!-- Updated JUnit 5 version -->
-    <jackson.version>2.17.0</jackson.version> <!-- Added Jackson version -->
+    <junit.jupiter.version>5.10.2</junit.jupiter.version>
+    <jackson.version>2.17.0</jackson.version>
   </properties>
 
   <dependencies>
@@ -45,12 +45,17 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <!-- Maven Compiler Plugin to enforce Java version -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version> <!-- Use a recent version -->
+        <version>3.13.0</version>
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
@@ -60,12 +65,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.2.5</version> <!-- Use a recent version compatible with JUnit 5 -->
+        <version>3.2.5</version>
         <configuration>
            <!-- Ensure tests are run correctly -->
         </configuration>
       </plugin>
-       <!-- Optional: Maven JAR Plugin to create an executable JAR -->
+      <!-- Maven JAR Plugin to create an executable JAR -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -73,11 +78,34 @@
         <configuration>
           <archive>
             <manifest>
-              <!-- TODO: Specify your main class here -->
-              <!-- <mainClass>com.yourcompany.virtualpet.MainApp</mainClass> -->
+              <mainClass>com.group14.virtualpet.Main</mainClass>
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <!-- Maven Assembly Plugin to create a single executable JAR with dependencies -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.7.1</version>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <archive>
+            <manifest>
+              <mainClass>com.group14.virtualpet.Main</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

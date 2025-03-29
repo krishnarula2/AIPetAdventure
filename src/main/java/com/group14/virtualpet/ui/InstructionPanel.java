@@ -61,6 +61,11 @@ public class InstructionPanel extends JPanel implements ActionListener {
         // TODO: Refine instructions text to be comprehensive and age-appropriate (Req 3.1.3)
         return "Welcome to Virtual Pet!\n\n" +
                 "Goal: Keep your pet happy and healthy!\n\n" +
+                "Each pet has four vital statistics:\n" +
+                "• Health: Decreases when your pet is in a negative state\n" +
+                "• Sleep: Decreases over time, replenish with rest\n" +
+                "• Fullness: Decreases over time, replenish by feeding\n" +
+                "• Happiness: Decreases over time, replenish with gifts\n\n" +
                 "Stats:\n" +
                 "- Health: How healthy your pet is. If it reaches 0, the game is over!\n" +
                 "- Sleep: How rested your pet is. If it reaches 0, your pet will fall asleep.\n" +
@@ -87,7 +92,7 @@ public class InstructionPanel extends JPanel implements ActionListener {
                 "Saving:\n" +
                 "Use the \'Save Game\' button during gameplay to save your progress. Your pet\'s name is used for the save file.\n\n" +
                 "Pet Types:\n" +
-                "Different pet types (Dog, Cat, Robot) have slightly different needs and stats.\n\n" +
+                "Different pet types (friendly_robot, balanced_robot, challenging_robot) have slightly different needs and stats.\n\n" +
                 "Have fun taking care of your virtual pet!";
     }
 

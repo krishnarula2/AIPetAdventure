@@ -1,6 +1,8 @@
 package com.group14.virtualpet.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -38,47 +40,32 @@ public abstract class Item implements Serializable {
     public String toString() {
         return name;
     }
+    
+    public Map<String, Object> toSavableData() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", name);
+        return data;
+    }
 
-    // --- Save/Load Methods --- Requirement 3.1.5, 3.1.8
-    // Removed to use Java Serialization
+    public static Item fromSavableData(Map<String, Object> data) {
+        if (data == null || !data.containsKey("itemType")) {
+            return null;
+        }
+        String itemType = (String) data.get("itemType");
 
-    // /**
-    //  * Returns a Map representation of the item for saving.
-    //  * Subclasses must override this to add their specific data and item type.
-    //  * @return A Map containing the item's data.
-    //  */
-    // public Map<String, Object> toSavableData() {
-    //     Map<String, Object> data = new HashMap<>();
-    //     data.put("name", name);
-    //     // Subclasses will add "itemType" and specific properties
-    //     return data;
-    // }
-
-    // /**
-    //  * Creates an Item instance from a savable Map.
-    //  * Delegates to specific subclass implementations based on "itemType".
-    //  * @param data The Map containing the item's data.
-    //  * @return An Item instance, or null if data is invalid or type is unknown.
-    //  */
-    // public static Item fromSavableData(Map<String, Object> data) {
-    //     if (data == null || !data.containsKey("itemType")) {
-    //         return null;
-    //     }
-    //     String itemType = (String) data.get("itemType");
-
-    //     try {
-    //         switch (itemType) {
-    //             case "FOOD":
-    //                 return FoodItem.fromSavableData(data);
-    //             case "GIFT":
-    //                 return GiftItem.fromSavableData(data);
-    //             default:
-    //                 System.err.println("Unknown item type in save data: " + itemType);
-    //                 return null;
-    //         }
-    //     } catch (Exception e) {
-    //         System.err.println("Error loading item from data: " + e.getMessage());
-    //         return null;
-    //     }
-    // }
+        try {
+            switch (itemType) {
+                case "FOOD":
+                    return FoodItem.fromSavableData(data);
+                case "GIFT":
+                    return GiftItem.fromSavableData(data);
+                default:
+                    System.err.println("Unknown item type in save data: " + itemType);
+                    return null;
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading item from data: " + e.getMessage());
+            return null;
+        }
+    }
 } 

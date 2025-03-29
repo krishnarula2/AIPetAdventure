@@ -1,6 +1,7 @@
 package com.group14.virtualpet.model;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Represents a gift item that increases happiness.
@@ -28,34 +29,30 @@ public class GiftItem extends Item implements Serializable {
     // Note: equals/hashCode are inherited from Item and should work correctly
     // if names are unique per item type.
 
-    // --- Save/Load Methods --- Requirement 3.1.5, 3.1.8
-    // Removed to use Java Serialization
+    @Override
+    public Map<String, Object> toSavableData() {
+        Map<String, Object> data = super.toSavableData();
+        data.put("itemType", "GIFT");
+        data.put("happinessValue", happinessValue);
+        return data;
+    }
 
-    // @Override
-    // public Map<String, Object> toSavableData() {
-    //     Map<String, Object> data = super.toSavableData();
-    //     data.put("itemType", "GIFT");
-    //     data.put("happinessValue", happinessValue);
-    //     return data;
-    // }
-
-    // /**
-    //  * Creates a GiftItem instance from a savable Map.
-    //  * Assumes the map contains the necessary keys ("name", "happinessValue").
-    //  * @param data The Map containing the item's data.
-    //  * @return A new GiftItem instance, or null if data is invalid.
-    //  */
-    // public static GiftItem fromSavableData(Map<String, Object> data) {
-    //     if (data == null || !data.containsKey("name") || !data.containsKey("happinessValue")) {
-    //         return null;
-    //     }
-    //     try {
-    //         String name = (String) data.get("name");
-    //         int happinessValue = ((Number) data.get("happinessValue")).intValue();
-    //         return new GiftItem(name, happinessValue);
-    //     } catch (Exception e) {
-    //         System.err.println("Error loading GiftItem data: " + e.getMessage());
-    //         return null;
-    //     }
-    // }
+    /**
+     * Creates a GiftItem instance from a savable Map.
+     * @param data The Map containing the item's data
+     * @return A new GiftItem instance, or null if data is invalid
+     */
+    public static GiftItem fromSavableData(Map<String, Object> data) {
+        if (data == null || !data.containsKey("name") || !data.containsKey("happinessValue")) {
+            return null;
+        }
+        try {
+            String name = (String) data.get("name");
+            int happinessValue = ((Number) data.get("happinessValue")).intValue();
+            return new GiftItem(name, happinessValue);
+        } catch (Exception e) {
+            System.err.println("Error loading GiftItem data: " + e.getMessage());
+            return null;
+        }
+    }
 } 

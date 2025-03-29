@@ -36,7 +36,7 @@ public class Pet implements Serializable { // Implement Serializable
     // TODO: Make max values, decline rates, and effects potentially dependent on petType
 
     // --- Fields ---
-    private String petType; // e.g., "Dog", "Cat", "Tamagotchi-Style"
+    private String petType; // e.g., "friendly_robot", "balanced_robot", "challenging_robot"
     private String name;
     private int health;
     private int sleep;
@@ -60,46 +60,48 @@ public class Pet implements Serializable { // Implement Serializable
     public Pet(String name, String petType) {
         this.name = name;
         this.petType = petType;
-
-        // Initialize max values and potentially decline rates based on type (Req 3.1.4)
-        switch (petType) {
-            case "Dog": // Example: Higher fullness decline, average everything else
-                this.maxHealth = DEFAULT_MAX_HEALTH;
-                this.maxSleep = DEFAULT_MAX_SLEEP;
-                this.maxFullness = DEFAULT_MAX_FULLNESS; // Standard max
-                this.maxHappiness = DEFAULT_MAX_HAPPINESS;
-                // TODO: Add type-specific decline rates if desired
-                break;
-            case "Cat": // Example: Lower happiness decline, higher sleep need
-                this.maxHealth = DEFAULT_MAX_HEALTH;
-                this.maxSleep = DEFAULT_MAX_SLEEP + 20; // Needs more sleep
-                this.maxFullness = DEFAULT_MAX_FULLNESS;
-                this.maxHappiness = DEFAULT_MAX_HAPPINESS + 10; // Stays happier longer
-                break;
-            case "Robot": // Example: Doesn't need sleep/food, different health mechanic?
-                this.maxHealth = DEFAULT_MAX_HEALTH + 50; // Tougher
-                this.maxSleep = Integer.MAX_VALUE; // Doesn't sleep (or handle differently)
-                this.maxFullness = Integer.MAX_VALUE; // Doesn't eat (or handle differently)
-                this.maxHappiness = DEFAULT_MAX_HAPPINESS - 20; // Harder to please
-                break;
-            default: // Fallback to defaults
-                this.maxHealth = DEFAULT_MAX_HEALTH;
-                this.maxSleep = DEFAULT_MAX_SLEEP;
-                this.maxFullness = DEFAULT_MAX_FULLNESS;
-                this.maxHappiness = DEFAULT_MAX_HAPPINESS;
-                break;
-        }
-
-        // Initialize stats to max values
-        this.health = this.maxHealth;
-        this.sleep = this.maxSleep;
-        this.fullness = this.maxFullness;
-        this.happiness = this.maxHappiness;
+        setInitialMaxValuesForPetType(); // Set max values based on type
+        
+        // Starting values at 75% of max
+        this.health = (int) (maxHealth * 0.75);
+        this.sleep = (int) (maxSleep * 0.75);
+        this.fullness = (int) (maxFullness * 0.75);
+        this.happiness = (int) (maxHappiness * 0.75);
 
         this.currentState = PetState.NORMAL;
 
         // TODO: Adjust starting stats and max values based on petType characteristics (Req 3.1.4) - Partially done
         // TODO: Adjust decline rates based on petType (requires adding fields for rates)
+    }
+
+    /**
+     * Set the maximum values for each statistic based on the pet type
+     */
+    private void setInitialMaxValuesForPetType() {
+        switch (petType) {
+            case "friendly_robot": // Example: Higher fullness decline, average everything else
+                this.maxHealth = DEFAULT_MAX_HEALTH;
+                this.maxSleep = DEFAULT_MAX_SLEEP;
+                this.maxFullness = DEFAULT_MAX_FULLNESS + 20; // More food capacity
+                this.maxHappiness = DEFAULT_MAX_HAPPINESS;
+                break;
+            case "balanced_robot": // Example: Lower happiness decline, higher sleep need
+                this.maxHealth = DEFAULT_MAX_HEALTH;
+                this.maxSleep = DEFAULT_MAX_SLEEP + 20; // More sleep needed
+                this.maxFullness = DEFAULT_MAX_FULLNESS;
+                this.maxHappiness = DEFAULT_MAX_HAPPINESS - 10; // Harder to keep happy
+                break;
+            case "challenging_robot": // Example: Lower health but increased happiness
+                this.maxHealth = DEFAULT_MAX_HEALTH - 10; // Less sturdy
+                this.maxSleep = DEFAULT_MAX_SLEEP;
+                this.maxFullness = DEFAULT_MAX_FULLNESS;
+                this.maxHappiness = DEFAULT_MAX_HAPPINESS + 20; // Higher potential happiness
+                break;
+            // TODO: Add more pet types
+            default:
+                // Default values as above
+                break;
+        }
     }
 
     // --- Getters ---
@@ -133,10 +135,10 @@ public class Pet implements Serializable { // Implement Serializable
         int currentHappinessDecline = DEFAULT_HAPPINESS_DECLINE;
 
         // Example: Modify decline rates based on type
-        if ("Dog".equals(petType)) {
-            currentFullnessDecline = 3; // Dogs get hungry faster
-        } else if ("Cat".equals(petType)) {
-            currentHappinessDecline = 0; // Cats stay happy (or decline slower)
+        if ("friendly_robot".equals(petType)) {
+            currentFullnessDecline = 3; // friendly_robots get hungry faster
+        } else if ("balanced_robot".equals(petType)) {
+            currentHappinessDecline = 0; // balanced_robots stay happy (or decline slower)
         }
 
         // Apply state-based effects and declines
@@ -393,76 +395,4 @@ public class Pet implements Serializable { // Implement Serializable
                 health, maxHealth, sleep, maxSleep, fullness, maxFullness, happiness, maxHappiness);
     }
 
-    // --- Save/Load Methods (Requirement 3.1.5) ---
-    // Removed to use Java Serialization
-
-    // /**
-    //  * Converts the Pet's current state into a savable Map.
-    //  * @return A Map containing the pet's data.
-    //  */
-    // public Map<String, Object> toSavableData() {
-    //     Map<String, Object> data = new HashMap<>();
-    //     data.put("petType", petType);
-    //     data.put("name", name);
-    //     data.put("health", health);
-    //     data.put("sleep", sleep);
-    //     data.put("fullness", fullness);
-    //     data.put("happiness", happiness);
-    //     data.put("currentState", currentState.name()); // Save state enum by name
-    //     data.put("maxHealth", maxHealth);
-    //     data.put("maxSleep", maxSleep);
-    //     data.put("maxFullness", maxFullness);
-    //     data.put("maxHappiness", maxHappiness);
-    //     data.put("lastVetTime", lastVetTime);
-    //     data.put("lastPlayTime", lastPlayTime);
-    //     return data;
-    // }
-
-    // /**
-    //  * Creates a Pet instance from a savable Map.
-    //  * Handles potential type errors or missing keys gracefully.
-    //  * @param data The Map containing the pet's data.
-    //  * @return A new Pet instance, or null if data is invalid.
-    //  */
-    // public static Pet fromSavableData(Map<String, Object> data) {
-    //     try {
-    //         String name = (String) data.get("name");
-    //         String petType = (String) data.get("petType");
-    //         if (name == null || petType == null) return null;
-
-    //         Pet pet = new Pet(name, petType);
-
-    //         // Use getOrDefault or check for null before casting/assigning
-    //         pet.health = ((Number) data.getOrDefault("health", pet.maxHealth)).intValue();
-    //         pet.sleep = ((Number) data.getOrDefault("sleep", pet.maxSleep)).intValue();
-    //         pet.fullness = ((Number) data.getOrDefault("fullness", pet.maxFullness)).intValue();
-    //         pet.happiness = ((Number) data.getOrDefault("happiness", pet.maxHappiness)).intValue();
-
-    //         String stateName = (String) data.getOrDefault("currentState", PetState.NORMAL.name());
-    //         pet.currentState = PetState.valueOf(stateName);
-
-    //         pet.maxHealth = ((Number) data.getOrDefault("maxHealth", DEFAULT_MAX_HEALTH)).intValue();
-    //         pet.maxSleep = ((Number) data.getOrDefault("maxSleep", DEFAULT_MAX_SLEEP)).intValue();
-    //         pet.maxFullness = ((Number) data.getOrDefault("maxFullness", DEFAULT_MAX_FULLNESS)).intValue();
-    //         pet.maxHappiness = ((Number) data.getOrDefault("maxHappiness", DEFAULT_MAX_HAPPINESS)).intValue();
-
-    //         pet.lastVetTime = ((Number) data.getOrDefault("lastVetTime", 0L)).longValue();
-    //         pet.lastPlayTime = ((Number) data.getOrDefault("lastPlayTime", 0L)).longValue();
-
-    //         // Ensure stats are within valid bounds after loading
-    //         pet.health = Math.max(0, Math.min(pet.maxHealth, pet.health));
-    //         pet.sleep = Math.max(0, Math.min(pet.maxSleep, pet.sleep));
-    //         pet.fullness = Math.max(0, Math.min(pet.maxFullness, pet.fullness));
-    //         pet.happiness = Math.max(0, Math.min(pet.maxHappiness, pet.happiness));
-
-    //         // Re-evaluate state in case loaded stats require it (e.g., loaded health is 0)
-    //         pet.updateState();
-
-    //         return pet;
-    //     } catch (Exception e) {
-    //         System.err.println("Error loading pet data: " + e.getMessage());
-    //         e.printStackTrace();
-    //         return null; // Return null on error
-    //     }
-    // }
 } 
