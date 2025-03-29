@@ -561,30 +561,40 @@ public class GameplayPanel extends JPanel implements ActionListener {
 
     private ImageIcon loadPetSprite(String petType, PetState state) {
         if (petType == null || state == null) return null;
-        String stateName = state.name().toLowerCase();
-        String primaryImagePath = "/images/" + petType + "/" + stateName + ".png";
-        String alternateImagePath = "/images/" + petType + "/" + stateName + "_alt.png";
-        String pathToAttempt = primaryImagePath;
-        if (spriteFlipFlop) {
-            URL altURL = getClass().getResource(alternateImagePath);
-            if (altURL != null) {
-                pathToAttempt = alternateImagePath;
-            }
+    
+        // Convert PetState enum (e.g. ANGRY, DEAD, HUNGRY) to a capitalized string ("Angry", "Dead", "Hungry")
+        // For NORMAL, we handle separately below.
+        String capitalizedState = state.name().substring(0, 1) 
+                                  + state.name().substring(1).toLowerCase();
+    
+        // If the pet is in NORMAL state, the file is "<petType>.png"
+        // Otherwise, the file is "<petType>_<CapitalizedState>.jpeg"
+        String fileName;
+        if (state == PetState.NORMAL) {
+            fileName = petType + ".png"; 
+        } else {
+            fileName = petType + "_" + capitalizedState + ".jpeg";
         }
-        URL imageURL = getClass().getResource(pathToAttempt);
+    
+        // Now build the full resource path. 
+        // Each pet type has its own folder under /images/pets/<petType>.
+        // But from your screenshot, it looks like the folder name is exactly petType.
+        // e.g., /images/pets/friendly_robot/friendly_robot.png
+        //       /images/pets/friendly_robot/friendly_robot_Angry.jpeg
+        String resourcePath = "/images/pets/" + petType + "/" + fileName;
+    
+        // Attempt to load the image
+        URL imageURL = getClass().getResource(resourcePath);
         if (imageURL != null) {
             return new ImageIcon(imageURL);
         } else {
-            if (spriteFlipFlop && pathToAttempt.equals(alternateImagePath)) {
-                URL primaryURL = getClass().getResource(primaryImagePath);
-                if (primaryURL != null) {
-                    return new ImageIcon(primaryURL);
-                }
-            }
-            System.err.println("Warning: Could not load sprite for " + petType + " state " + stateName + " (tried " + pathToAttempt + ")");
+            System.err.println("Warning: Could not load sprite file: " + resourcePath);
             return null;
         }
     }
+    
+    
+    
 
     private JProgressBar createStatProgressBar(String label) {
         JProgressBar progressBar = new JProgressBar(0, 100);
