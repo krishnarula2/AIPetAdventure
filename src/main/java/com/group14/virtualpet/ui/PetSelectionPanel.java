@@ -271,7 +271,24 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
     /** Loads an ImageIcon for the specified pet type */
     private ImageIcon loadPetImage(String petType) {
         if (petType == null) return null;
-        String imagePath = "/images/pets/" + petType + ".png";
+        
+        String imagePath;
+        // Use specific paths for each robot type
+        switch (petType) {
+            case "friendly_robot":
+                imagePath = "/images/pets/friendly_robot/friendly_robot.png";
+                break;
+            case "balanced_robot":
+                imagePath = "/images/pets/balanced_robot/balanced_robot.png";
+                break;
+            case "challenging_robot":
+                imagePath = "/images/pets/challenging_robot/challenging_robot.png";
+                break;
+            default:
+                imagePath = "/images/pets/" + petType + ".png";
+                break;
+        }
+        
         URL imageURL = getClass().getResource(imagePath);
         if (imageURL != null) {
             return new ImageIcon(imageURL);
