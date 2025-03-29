@@ -38,7 +38,6 @@ public class SettingsPanel extends JPanel implements ActionListener {
     
     // Buttons
     private final JButton backButton;
-    private final JButton applyButton;
 
     /**
      * Creates a new SettingsPanel.
@@ -80,13 +79,9 @@ public class SettingsPanel extends JPanel implements ActionListener {
         backButton = createButton("Back to Menu", new Color(240, 80, 80));
         backButton.addActionListener(this);
         
-        applyButton = createButton("Apply Changes", new Color(80, 180, 80));
-        applyButton.addActionListener(this);
-        
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 0));
         buttonPanel.setOpaque(false);
         buttonPanel.add(backButton);
-        buttonPanel.add(applyButton);
         
         footerPanel.add(buttonPanel, BorderLayout.CENTER);
         add(footerPanel, BorderLayout.SOUTH);
@@ -148,6 +143,8 @@ public class SettingsPanel extends JPanel implements ActionListener {
         backgroundMusicCheckbox.addActionListener(e -> {
             boolean isSelected = backgroundMusicCheckbox.isSelected();
             AudioManager.getInstance().setMusicEnabled(isSelected);
+            // Auto-save settings immediately when changed
+            saveSettings();
         });
         
         musicPanel.add(musicLabelPanel, BorderLayout.WEST);
@@ -312,16 +309,6 @@ public class SettingsPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == backButton) {
             navigateCallback.accept(Main.MAIN_MENU_CARD);
-        } else if (e.getSource() == applyButton) {
-            // Save settings
-            saveSettings();
-            // Show confirmation
-            javax.swing.JOptionPane.showMessageDialog(
-                this,
-                "Settings have been saved successfully!",
-                "Settings Saved",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE
-            );
         }
     }
     
