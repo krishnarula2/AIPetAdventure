@@ -1,13 +1,14 @@
 package com.group14.virtualpet.state;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.group14.virtualpet.model.Inventory;
 import com.group14.virtualpet.model.Pet;
 
 /**
  * Represents the complete state of the game that can be saved or loaded.
- * Requirement: 3.1.5, 3.1.11.1
+ * Requirement: 3.1.5, 3.1.11.1, 3.1.11.2
  */
 public class GameState implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -16,13 +17,16 @@ public class GameState implements Serializable {
     private Inventory inventory;
     private int score; // Make score mutable if needed, e.g., for parental stats reset
 
+    private Date playtimeStart;
+    private Date playtimeEnd;
+
     // Parental Controls - Time Limit (Req 3.1.11.1)
     private boolean timeLimitEnabled = false;
     private int maxPlaytimeMinutes = 30; // Default limit if enabled
 
     // Parental Controls - Statistics (Req 3.1.11.2)
     private long totalPlaytimeMillis = 0;
-    // TODO: Add session count? last played date?
+    private int sessionCount = 0; // Added field to track the number of play sessions
 
     // Transient field: Not saved, reset on load/start
     private transient long currentSessionStartTimeMillis = -1; // -1 indicates session not started
@@ -68,8 +72,8 @@ public class GameState implements Serializable {
     }
 
     public void setMaxPlaytimeMinutes(int maxPlaytimeMinutes) {
-        // Add validation if desired (e.g., ensure positive)
-        this.maxPlaytimeMinutes = Math.max(1, maxPlaytimeMinutes); // Ensure at least 1 minute
+        // Ensure at least 1 minute
+        this.maxPlaytimeMinutes = Math.max(1, maxPlaytimeMinutes);
     }
 
     // --- Statistics Getters/Setters/Modifiers (Req 3.1.11.2) ---
@@ -88,8 +92,21 @@ public class GameState implements Serializable {
     /** Resets the tracked playtime statistics. */
     public void resetPlaytimeStats() {
         this.totalPlaytimeMillis = 0;
-        // TODO: Reset session count etc. if added
+        this.sessionCount = 0;
         System.out.println("Playtime statistics reset.");
+    }
+
+    /** Gets the number of sessions played. */
+    public int getSessionCount() {
+        return sessionCount;
+    }
+
+    /** Calculates the average session length in milliseconds. */
+    public long getAverageSessionMillis() {
+        if (sessionCount == 0) {
+            return 0;
+        }
+        return totalPlaytimeMillis / sessionCount;
     }
 
     // --- Session Time Management (Internal, used by GameplayPanel) ---
@@ -105,22 +122,43 @@ public class GameState implements Serializable {
         System.out.println("Session timer started at: " + this.currentSessionStartTimeMillis);
     }
 
-    /** Stops the session timer (e.g., when game is paused or saved). */
+    /**
+     * Stops the session timer (e.g., when game is paused or saved) and updates playtime statistics.
+     * This method adds the elapsed session time to total playtime and increments the session count.
+     */
     public void stopSessionTimer() {
-         // We don't actually need to *stop* the timer, just record the start.
-         // Resetting to -1 could indicate the session is inactive.
+        if (currentSessionStartTimeMillis > 0) {
+            long elapsedMillis = System.currentTimeMillis() - currentSessionStartTimeMillis;
+            addPlaytimeMillis(elapsedMillis);
+            sessionCount++;
+            System.out.println("Session ended. Elapsed time: " + elapsedMillis +
+                               " ms. Total sessions: " + sessionCount);
+        }
         this.currentSessionStartTimeMillis = -1;
-        System.out.println("Session timer stopped/reset.");
     }
 
     /** Calculates the elapsed time in the current session in minutes. */
     public long getElapsedSessionTimeMinutes() {
         if (currentSessionStartTimeMillis <= 0) {
-            return 0; // Session not started or stopped
+            return 0; // Session not started or already stopped
         }
         long elapsedMillis = System.currentTimeMillis() - currentSessionStartTimeMillis;
         return elapsedMillis / (1000 * 60);
     }
 
-    // TODO: Add methods/fields for Parental Statistics (Play Time) - Req 3.1.11.2
+    public Date getPlaytimeStart() {
+        return playtimeStart;
+    }
+    
+    public void setPlaytimeStart(Date playtimeStart) {
+        this.playtimeStart = playtimeStart;
+    }
+    
+    public Date getPlaytimeEnd() {
+        return playtimeEnd;
+    }
+    
+    public void setPlaytimeEnd(Date playtimeEnd) {
+        this.playtimeEnd = playtimeEnd;
+    }
 }
