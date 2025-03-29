@@ -101,8 +101,17 @@ public class MainFrame extends JFrame implements Consumer<String>, KeyListener {
         // If navigating to main menu, request focus for keyboard shortcuts
         if (cardName.equals(Main.MAIN_MENU_CARD)) {
             SwingUtilities.invokeLater(() -> {
+                // Request focus in multiple ways to ensure it works
                 requestFocus();
+                requestFocusInWindow();
+                setFocusable(true);
                 System.out.println("Focus requested for MainFrame");
+                
+                // Re-add the key listener to ensure it's active
+                for (KeyListener kl : getKeyListeners()) {
+                    removeKeyListener(kl);
+                }
+                addKeyListener(this);
             });
         }
     }
@@ -120,6 +129,21 @@ public class MainFrame extends JFrame implements Consumer<String>, KeyListener {
         addKeyListener(this);
         setFocusable(true);
         requestFocusInWindow();
+        
+        // Add a focus listener to detect when focus is lost
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) {
+                System.out.println("MainFrame lost focus");
+                if (Main.MAIN_MENU_CARD.equals(currentCard)) {
+                    SwingUtilities.invokeLater(() -> {
+                        requestFocusInWindow();
+                        System.out.println("Focus requested after focus loss");
+                    });
+                }
+            }
+        });
+        
         System.out.println("Keyboard shortcuts initialized");
     }
     
