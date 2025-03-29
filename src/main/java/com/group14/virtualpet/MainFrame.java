@@ -3,6 +3,8 @@ package com.group14.virtualpet;
 import java.awt.CardLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.function.Consumer;
 
 import javax.swing.JFrame;
@@ -17,6 +19,7 @@ import com.group14.virtualpet.ui.MainMenuPanel;
 import com.group14.virtualpet.ui.ParentalControlsPanel;
 import com.group14.virtualpet.ui.PetSelectionPanel;
 import com.group14.virtualpet.ui.SettingsPanel;
+import com.group14.virtualpet.util.AudioManager;
 
 /**
  * The main window frame for the Virtual Pet application.
@@ -72,6 +75,18 @@ public class MainFrame extends JFrame implements Consumer<String>, KeyListener {
         setLocationRelativeTo(null); // Center the window
         // Initialize keyboard handling after construction
         SwingUtilities.invokeLater(this::initializeKeyboardHandling);
+        
+        // Initialize audio manager and explicitly start background music
+        AudioManager.getInstance().startBackgroundMusic();
+        
+        // Add window listener to clean up resources when closing
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                // Clean up resources
+                AudioManager.getInstance().cleanup();
+            }
+        });
         
         setVisible(true);
     }

@@ -17,11 +17,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import com.group14.virtualpet.Main;
+import com.group14.virtualpet.util.AudioManager;
 
 /**
  * Settings panel for the Virtual Pet game.
@@ -33,7 +33,6 @@ public class SettingsPanel extends JPanel implements ActionListener {
     
     // Sound settings
     private JCheckBox backgroundMusicCheckbox;
-    private JSlider soundEffectsSlider;
     
     // Controls are created dynamically in createControlEntry method
     
@@ -141,52 +140,20 @@ public class SettingsPanel extends JPanel implements ActionListener {
         musicLabelPanel.add(musicLabel, BorderLayout.NORTH);
         musicLabelPanel.add(musicDescLabel, BorderLayout.CENTER);
         
+        // Initialize checkbox with current audio manager state
         backgroundMusicCheckbox = createToggleSwitch();
+        backgroundMusicCheckbox.setSelected(AudioManager.getInstance().isMusicEnabled());
+        
+        // Add change listener to toggle music when checkbox is changed
+        backgroundMusicCheckbox.addActionListener(e -> {
+            boolean isSelected = backgroundMusicCheckbox.isSelected();
+            AudioManager.getInstance().setMusicEnabled(isSelected);
+        });
         
         musicPanel.add(musicLabelPanel, BorderLayout.WEST);
         musicPanel.add(backgroundMusicCheckbox, BorderLayout.EAST);
         
-        // Sound effects slider
-        JPanel effectsPanel = new JPanel(new BorderLayout());
-        effectsPanel.setOpaque(false);
-        effectsPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
-        
-        JPanel effectsLabelPanel = new JPanel(new BorderLayout());
-        effectsLabelPanel.setOpaque(false);
-        
-        JLabel effectsLabel = new JLabel("Sound Effects");
-        effectsLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        
-        JLabel effectsDescLabel = new JLabel("Play sounds for pet actions and events");
-        effectsDescLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        effectsDescLabel.setForeground(Color.GRAY);
-        
-        effectsLabelPanel.add(effectsLabel, BorderLayout.NORTH);
-        effectsLabelPanel.add(effectsDescLabel, BorderLayout.CENTER);
-        
-        JPanel sliderPanel = new JPanel(new BorderLayout());
-        sliderPanel.setOpaque(false);
-        
-        soundEffectsSlider = new JSlider(0, 100, 80);
-        soundEffectsSlider.setOpaque(false);
-        soundEffectsSlider.setPreferredSize(new Dimension(150, 30));
-        
-        JLabel percentLabel = new JLabel("80%");
-        percentLabel.setFont(new Font("Arial", Font.PLAIN, 12));
-        
-        soundEffectsSlider.addChangeListener(e -> {
-            int value = soundEffectsSlider.getValue();
-            percentLabel.setText(value + "%");
-        });
-        
-        sliderPanel.add(soundEffectsSlider, BorderLayout.CENTER);
-        sliderPanel.add(percentLabel, BorderLayout.EAST);
-        
-        effectsPanel.add(effectsLabelPanel, BorderLayout.WEST);
-        effectsPanel.add(sliderPanel, BorderLayout.EAST);
-        
         panel.add(musicPanel);
-        panel.add(effectsPanel);
         
         return panel;
     }
@@ -362,10 +329,13 @@ public class SettingsPanel extends JPanel implements ActionListener {
      * Saves the current settings
      */
     private void saveSettings() {
-        // TODO: Implement settings saving logic
-        // This would typically save to a preferences file or database
+        // Update audio settings in the AudioManager
+        boolean musicEnabled = backgroundMusicCheckbox.isSelected();
+        
+        AudioManager audioManager = AudioManager.getInstance();
+        audioManager.setMusicEnabled(musicEnabled);
+        
         System.out.println("Saving settings:");
-        System.out.println("Background Music: " + backgroundMusicCheckbox.isSelected());
-        System.out.println("Sound Effects: " + soundEffectsSlider.getValue() + "%");
+        System.out.println("Background Music: " + musicEnabled);
     }
 }
