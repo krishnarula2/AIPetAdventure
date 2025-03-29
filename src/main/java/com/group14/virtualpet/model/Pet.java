@@ -129,10 +129,10 @@ public class Pet implements Serializable {
             }
         } else if (sleep <= 0) {
              forceSleep();
-        } else if (happiness <= 0) {
-            currentState = PetState.ANGRY;
         } else if (fullness <= 0) {
             currentState = PetState.HUNGRY;
+        } else if (happiness <= 0) {
+            currentState = PetState.ANGRY;        
         } else {
             if (currentState == PetState.ANGRY && happiness >= ANGRY_MIN_HAPPINESS_EXIT) {
                 currentState = PetState.NORMAL;
