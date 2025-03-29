@@ -442,48 +442,47 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
         }
     }
 
-   /** Handles the Play as Parent button action. */
-private void handlePlayAsParent() {
-    GameState gameState = null;
-    Object selectedItem = saveFileDropdown.getSelectedItem();
+    /** Handles the Play as Parent button action. */
+    private void handlePlayAsParent() {
+        GameState gameState = null;
+        Object selectedItem = saveFileDropdown.getSelectedItem();
 
-    // 1. If a valid save is selected, load it and disable time limits.
-    if (selectedItem != null && !"No saves found".equals(selectedItem.toString())) {
-        gameState = SaveLoadUtil.loadGame(selectedItem.toString());
-        if (gameState != null) {
-            gameState.setTimeLimitEnabled(false);
-            SaveLoadUtil.saveGame(gameState, selectedItem.toString());
+        // 1. If a valid save is selected, load it and disable time limits.
+        if (selectedItem != null && !"No saves found".equals(selectedItem.toString())) {
+            gameState = SaveLoadUtil.loadGame(selectedItem.toString());
+            if (gameState != null) {
+                gameState.setTimeLimitEnabled(false);
+                SaveLoadUtil.saveGame(gameState, selectedItem.toString());
+            }
         }
-    }
 
-    // 2. If no valid save loaded, create a new default GameState.
-    if (gameState == null) {
-        // Adjust this to match your actual Pet/Inventory constructors.
-        gameState = new GameState(
-            new com.group14.virtualpet.model.Pet("ParentPet", "DefaultType"),
-            new com.group14.virtualpet.model.Inventory(),
-            0
+        // 2. If no valid save loaded, create a new default GameState.
+        if (gameState == null) {
+            // Adjust this to match your actual Pet/Inventory constructors.
+            gameState = new GameState(
+                new com.group14.virtualpet.model.Pet("ParentPet", "DefaultType"),
+                new com.group14.virtualpet.model.Inventory(),
+                0
+            );
+            SaveLoadUtil.saveGame(gameState, "parent_default_save");
+        }
+
+        // 3. Show a confirmation message.
+        JOptionPane.showMessageDialog(this,
+            "Starting game as Parent (no restrictions applied).",
+            "Play as Parent",
+            JOptionPane.INFORMATION_MESSAGE
         );
-        SaveLoadUtil.saveGame(gameState, "parent_default_save");
-    }
 
-    // 3. Show a confirmation message.
-    JOptionPane.showMessageDialog(this,
-        "Starting game as Parent (no restrictions applied).",
-        "Play as Parent",
-        JOptionPane.INFORMATION_MESSAGE
-    );
-
-    // 4. Pass this GameState to the gameplay panel and switch screens.
-    //    Example if your MainFrame has a method like loadAndSwitchToGameplay(GameState).
-    if (navigateCallback instanceof MainFrame) {
-        ((MainFrame) navigateCallback).loadAndSwitchToGameplay(gameState);
-    } else {
-        // Fallback: just navigate to the gameplay card (but you still need to set the GameState).
-        if (navigateCallback != null) {
-            navigateCallback.accept(Main.GAMEPLAY_CARD);
+        // 4. Pass this GameState to the gameplay panel and switch screens.
+        //    Example if your MainFrame has a method like loadAndSwitchToGameplay(GameState).
+        if (navigateCallback instanceof MainFrame) {
+            ((MainFrame) navigateCallback).loadAndSwitchToGameplay(gameState);
+        } else {
+            // Fallback: just navigate to the gameplay card (but you still need to set the GameState).
+            if (navigateCallback != null) {
+                navigateCallback.accept(Main.GAMEPLAY_CARD);
+            }
         }
     }
-}
-
 }
