@@ -14,7 +14,7 @@ public class Main {
     public static final String PET_SELECTION_CARD = "PetSelection";
     public static final String INSTRUCTION_CARD = "Instructions"; // Add card name for instructions
     public static final String PARENTAL_CONTROLS_CARD = "ParentalControls"; // Add card name for parental controls
-    // TODO: Add card name for PARENTAL_CONTROLS_CARD
+    public static final String SETTINGS_CARD = "Settings"; // Add card name for settings
 
     public static void main(String[] args) {
         // Schedule a job for the event-dispatching thread:

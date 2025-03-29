@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -18,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import com.group14.virtualpet.Main;
 import com.group14.virtualpet.MainFrame;
@@ -31,13 +34,13 @@ import com.group14.virtualpet.util.SaveLoadUtil;
 public class MainMenuPanel extends JPanel implements ActionListener {
 
     // Buttons
-    private JButton newGameButton;
-    private JButton loadGameButton;
-    private JButton instructionsButton;
-    private JButton parentalControlsButton;
-    private JButton exitButton;
+    private final JButton newGameButton;
+    private final JButton loadGameButton;
+    private final JButton instructionsButton;
+    private final JButton parentalControlsButton;
+    private final JButton exitButton;
 
-    private Consumer<String> navigateCallback; // Callback for navigation
+    private final Consumer<String> navigateCallback; // Callback for navigation
 
     // TODO: Add JLabels for title, graphic placeholder, developer names, team #, term, university info
 
@@ -162,6 +165,21 @@ public class MainMenuPanel extends JPanel implements ActionListener {
         
         bottomPanel.add(footerBackground);
         add(bottomPanel, BorderLayout.SOUTH);
+
+        // Initialize keyboard controls after construction
+        initializeKeyboardControls();
+        
+        // Add component listener to request focus when panel becomes visible
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                // Request focus when the panel becomes visible
+                SwingUtilities.invokeLater(() -> {
+                    requestFocusInWindow();
+                    System.out.println("MainMenuPanel shown - requesting focus");
+                });
+            }
+        });
     }
 
     /**
@@ -205,11 +223,28 @@ public class MainMenuPanel extends JPanel implements ActionListener {
         return button;
     }
 
+    /**
+     * Initialize keyboard controls for the panel
+     */
+    private void initializeKeyboardControls() {
+        // Keyboard handling is now done in MainFrame
+        // This method is kept for backward compatibility
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        // Request focus when the panel is added to the container hierarchy
+        SwingUtilities.invokeLater(() -> {
+            requestFocusInWindow();
+            System.out.println("MainMenuPanel addNotify - requesting focus");
+        });
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        if (source instanceof JButton) {
-            JButton button = (JButton) source;
+        if (source instanceof JButton button) {
             String buttonText = (String) button.getClientProperty("buttonText");
             
             if (buttonText == null) {
@@ -245,17 +280,22 @@ public class MainMenuPanel extends JPanel implements ActionListener {
                     System.exit(0);
                 }
             } else if ("Settings".equals(buttonText)) {
-                System.out.println("Settings Clicked");
-                JOptionPane.showMessageDialog(this, 
-                    "Settings would be displayed here.", 
-                    "Settings", 
-                    JOptionPane.INFORMATION_MESSAGE);
+                System.out.println("Settings Clicked - Navigating...");
+                if (navigateCallback != null) {
+                    navigateCallback.accept(Main.SETTINGS_CARD);
+                }
             }
         }
     }
 
     /** Handles the Load Game button action. Req 3.1.5 */
-    private void handleLoadGame() {
+    // Keyboard handling is now done in MainFrame
+
+    /**
+     * Handles the Load Game button action. Req 3.1.5
+     * Made public so it can be called from MainFrame
+     */
+    public void handleLoadGame() {
         List<String> saveFiles = SaveLoadUtil.listSaveFiles();
 
         if (saveFiles.isEmpty()) {

@@ -1,10 +1,14 @@
 package com.group14.virtualpet;
 
 import java.awt.CardLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.function.Consumer;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.group14.virtualpet.state.GameState;
 import com.group14.virtualpet.ui.GameplayPanel;
@@ -12,24 +16,26 @@ import com.group14.virtualpet.ui.InstructionPanel;
 import com.group14.virtualpet.ui.MainMenuPanel;
 import com.group14.virtualpet.ui.ParentalControlsPanel;
 import com.group14.virtualpet.ui.PetSelectionPanel;
+import com.group14.virtualpet.ui.SettingsPanel;
 
 /**
  * The main window frame for the Virtual Pet application.
  * Manages the different panels (screens) using CardLayout.
  * Requirement: 3.1.1 (Multiple Screens)
  */
-public class MainFrame extends JFrame implements Consumer<String> {
+public class MainFrame extends JFrame implements Consumer<String>, KeyListener {
 
-    private CardLayout cardLayout;
-    private JPanel mainPanel; // Panel that uses CardLayout
+    private final CardLayout cardLayout;
+    private final JPanel mainPanel; // Panel that uses CardLayout
+    private String currentCard = Main.MAIN_MENU_CARD; // Track current card
 
     // Panels (Screens)
-    private MainMenuPanel mainMenuPanel;
-    private GameplayPanel gameplayPanel;
-    private PetSelectionPanel petSelectionPanel;
-    private InstructionPanel instructionPanel;
-    private ParentalControlsPanel parentalControlsPanel;
-    // TODO: Add panels for Instructions, Parental Controls
+    private final MainMenuPanel mainMenuPanel;
+    private final GameplayPanel gameplayPanel;
+    private final PetSelectionPanel petSelectionPanel;
+    private final InstructionPanel instructionPanel;
+    private final ParentalControlsPanel parentalControlsPanel;
+    private final SettingsPanel settingsPanel;
 
     public MainFrame() {
         setTitle("Virtual Pet Game"); // Requirement 3.1.2
@@ -46,6 +52,7 @@ public class MainFrame extends JFrame implements Consumer<String> {
         petSelectionPanel = new PetSelectionPanel(this, this::startNewGame);
         instructionPanel = new InstructionPanel(this);
         parentalControlsPanel = new ParentalControlsPanel(this);
+        settingsPanel = new SettingsPanel(this);
 
         // --- Add Panels to CardLayout ---
         mainPanel.add(mainMenuPanel, Main.MAIN_MENU_CARD);
@@ -53,7 +60,7 @@ public class MainFrame extends JFrame implements Consumer<String> {
         mainPanel.add(petSelectionPanel, Main.PET_SELECTION_CARD);
         mainPanel.add(instructionPanel, Main.INSTRUCTION_CARD);
         mainPanel.add(parentalControlsPanel, Main.PARENTAL_CONTROLS_CARD);
-        // TODO: Add other panels
+        mainPanel.add(settingsPanel, Main.SETTINGS_CARD);
 
         // Add the main panel to the frame
         add(mainPanel);
@@ -63,6 +70,9 @@ public class MainFrame extends JFrame implements Consumer<String> {
 
         pack(); // Adjusts window size to preferred sizes of components
         setLocationRelativeTo(null); // Center the window
+        // Initialize keyboard handling after construction
+        SwingUtilities.invokeLater(this::initializeKeyboardHandling);
+        
         setVisible(true);
     }
 
@@ -84,6 +94,17 @@ public class MainFrame extends JFrame implements Consumer<String> {
         }
         // TODO: Add reset logic for other panels if needed (e.g., PetSelectionPanel already has resetFields)
         cardLayout.show(mainPanel, cardName);
+        
+        // Update current card tracking
+        currentCard = cardName;
+        
+        // If navigating to main menu, request focus for keyboard shortcuts
+        if (cardName.equals(Main.MAIN_MENU_CARD)) {
+            SwingUtilities.invokeLater(() -> {
+                requestFocus();
+                System.out.println("Focus requested for MainFrame");
+            });
+        }
     }
 
     /**
@@ -91,6 +112,66 @@ public class MainFrame extends JFrame implements Consumer<String> {
      * Called by MainMenuPanel after successfully loading a game.
      * @param loadedState The GameState object loaded from a file.
      */
+    /**
+     * Initialize keyboard handling after construction to avoid leaking 'this' in constructor
+     */
+    private void initializeKeyboardHandling() {
+        // Add key listener to the frame
+        addKeyListener(this);
+        setFocusable(true);
+        requestFocusInWindow();
+        System.out.println("Keyboard shortcuts initialized");
+    }
+    
+    /**
+     * Handle key press events
+     */
+    @Override
+    public void keyPressed(KeyEvent e) {
+        // Debug logging for keyboard events
+        System.out.println("Key pressed: " + KeyEvent.getKeyText(e.getKeyCode()) + 
+            " (code: " + e.getKeyCode() + "), current card: " + currentCard);
+        
+        // Only process key pressed events when the main menu is showing
+        if (Main.MAIN_MENU_CARD.equals(currentCard)) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_1 -> accept(Main.PET_SELECTION_CARD);
+                case KeyEvent.VK_2 -> mainMenuPanel.handleLoadGame();
+                case KeyEvent.VK_3 -> accept(Main.INSTRUCTION_CARD);
+                case KeyEvent.VK_4 -> accept(Main.PARENTAL_CONTROLS_CARD);
+                case KeyEvent.VK_5 -> {
+                    System.out.println("Navigating to Settings from key 5");
+                    accept(Main.SETTINGS_CARD);
+                }
+                case KeyEvent.VK_ESCAPE -> {
+                    int choice = JOptionPane.showConfirmDialog(this,
+                            "Are you sure you want to exit?",
+                            "Exit Game",
+                            JOptionPane.YES_NO_OPTION);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        System.exit(0);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Required by KeyListener interface
+     */
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // Not used
+    }
+    
+    /**
+     * Required by KeyListener interface
+     */
+    @Override
+    public void keyReleased(KeyEvent e) {
+        // Not used
+    }
+    
     public void loadAndSwitchToGameplay(GameState loadedState) {
         if (loadedState != null) {
             // TODO: Implement a method in GameplayPanel to accept loaded data
