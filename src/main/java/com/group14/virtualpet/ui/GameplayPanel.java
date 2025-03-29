@@ -38,7 +38,7 @@ import com.group14.virtualpet.util.SaveLoadUtil;
 public class GameplayPanel extends JPanel implements ActionListener {
 
     private static final int GAME_TICK_MS = 1000; // 1 second per tick
-    private static final int ITEM_GRANT_INTERVAL_TICKS = 60; // Grant an item every 60 ticks (~60 seconds)
+    private static final int ITEM_GRANT_INTERVAL_TICKS = 15; //  (~15 seconds)
     private static final Color LOW_STAT_WARNING_COLOR = Color.RED;
     private static final double LOW_STAT_THRESHOLD = 0.25;
 
