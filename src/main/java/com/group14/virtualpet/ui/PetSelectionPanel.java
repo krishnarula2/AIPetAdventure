@@ -8,6 +8,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.net.URL;
 import java.util.function.Consumer;
 
@@ -122,8 +124,31 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         nameHeader.setFont(new Font("Arial", Font.BOLD, 18));
         namePanel.add(nameHeader, BorderLayout.NORTH);
         
-        petNameField = new JTextField("Enter pet name...");
+        final String placeholderText = "Enter pet name..."; // Store placeholder
+        petNameField = new JTextField(placeholderText);
         petNameField.setHorizontalAlignment(JTextField.CENTER);
+
+        // *** ADD FOCUS LISTENER ***
+        petNameField.addFocusListener(new java.awt.event.FocusAdapter() { // Specify package
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) { // Specify package
+                if (petNameField.getText().equals(placeholderText)) {
+                    petNameField.setText("");
+                    petNameField.setForeground(Color.BLACK); // Use default text color
+                }
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent e) { // Specify package
+                if (petNameField.getText().isEmpty()) {
+                    petNameField.setForeground(Color.GRAY); // Make placeholder distinct
+                    petNameField.setText(placeholderText);
+                }
+            }
+        });
+        // Set initial placeholder color
+        petNameField.setForeground(Color.GRAY);
+        
         namePanel.add(petNameField, BorderLayout.CENTER);
         
         bottomPanel.add(namePanel, BorderLayout.CENTER);
@@ -150,6 +175,9 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         card.setBorder(BorderFactory.createLineBorder(themeColor, 2));
         card.setBackground(Color.WHITE);
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+        
+        // Set a consistent preferred size for all cards
+        card.setPreferredSize(new Dimension(220, 350)); // Adjust width/height as needed
         
         // Center elements horizontally
         card.setAlignmentX(CENTER_ALIGNMENT);
@@ -192,6 +220,10 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         JPanel statPanel2 = createSquareStatBar("Energy Need:", sleepValue, 5, themeColor);
         JPanel statPanel3 = createSquareStatBar("Mood:", happyValue, 5, themeColor);
         
+        statPanel1.setAlignmentX(CENTER_ALIGNMENT);
+        statPanel2.setAlignmentX(CENTER_ALIGNMENT);
+        statPanel3.setAlignmentX(CENTER_ALIGNMENT);
+        
         card.add(statPanel1);
         card.add(statPanel2);
         card.add(statPanel3);
@@ -200,10 +232,20 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         card.add(Box.createRigidArea(new Dimension(0, 10)));
         
         // Pet description
-        JLabel descLabel = new JLabel("<html><div style='width:170px; text-align:center'>" + description + "</div></html>");
+        // Use a fixed width that matches the card width (minus padding)
+        JLabel descLabel = new JLabel("<html><div style='width:200px; text-align:center'>" + description + "</div></html>");
         descLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-        descLabel.setAlignmentX(CENTER_ALIGNMENT);
-        card.add(descLabel);
+
+        // *** WRAP in a centering Panel ***
+        JPanel descWrapperPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0)); // Use FlowLayout for centering
+        descWrapperPanel.setBackground(Color.WHITE); // Match card background
+        descWrapperPanel.add(descLabel);
+        descWrapperPanel.setAlignmentX(CENTER_ALIGNMENT); // Align the wrapper panel within the BoxLayout
+        
+        // Make sure the wrapper panel takes full width
+        descWrapperPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, descWrapperPanel.getPreferredSize().height));
+
+        card.add(descWrapperPanel); // NEW: Add the wrapper panel to the card
         
         // Pet selection radio button
         JRadioButton selectButton = new JRadioButton();
