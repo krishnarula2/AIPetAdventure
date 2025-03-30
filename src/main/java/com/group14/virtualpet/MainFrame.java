@@ -173,6 +173,15 @@ public class MainFrame extends JFrame implements Consumer<String>, KeyListener {
         
         // Only process key pressed events when the main menu is showing
         if (Main.MAIN_MENU_CARD.equals(currentCard)) {
+            // Play sound effect for relevant keys
+            boolean playSound = switch (e.getKeyCode()) {
+                case KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4, KeyEvent.VK_5 -> true;
+                default -> false;
+            };
+            if (playSound) {
+                AudioManager.getInstance().playSoundEffect("mainbuttonSound.mp3");
+            }
+            
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_1 -> accept(Main.PET_SELECTION_CARD);
                 case KeyEvent.VK_2 -> mainMenuPanel.handleLoadGame();

@@ -74,7 +74,7 @@ class MP3PlayerThread extends Thread {
  */
 public class AudioManager {
     private static AudioManager instance;
-    private MP3PlayerThread playerThread;
+    private MP3PlayerThread playerThread; // Thread for background music
     private boolean musicEnabled = true;
 
     private static final String PREFS_NODE = "com.group14.virtualpet";
@@ -186,6 +186,45 @@ public class AudioManager {
      */
     public boolean isMusicEnabled() {
         return musicEnabled;
+    }
+
+    /**
+     * Plays a short sound effect once.
+     * @param soundFileName The name of the sound file (e.g., "effect.mp3") located in the resources/sounds directory.
+     */
+    public void playSoundEffect(String soundFileName) {
+        // Optional: Add a check here for a separate sound effects enabled preference if needed
+        if (!musicEnabled) { // For now, piggy-back on music setting. Could be separated later.
+            // System.out.println("Sound effects are disabled.");
+             return;
+        }
+
+        new Thread(() -> { // Play sound in a new, separate thread to avoid blocking UI / music
+            InputStream audioSrc = null;
+            Player effectPlayer = null;
+            try {
+                String resourcePath = "sounds/" + soundFileName;
+                audioSrc = getClass().getClassLoader().getResourceAsStream(resourcePath);
+                if (audioSrc == null) {
+                    System.err.println("Could not find sound effect file: " + resourcePath);
+                    return;
+                }
+                // Use BufferedInputStream for potential performance benefits
+                 BufferedInputStream bufferedInputStream = new BufferedInputStream(audioSrc);
+                effectPlayer = new Player(bufferedInputStream);
+                effectPlayer.play(); // Play the sound effect once to completion
+
+            } catch (JavaLayerException e) {
+                System.err.println("Error playing sound effect '" + soundFileName + "': " + e.getMessage());
+            } finally {
+                // Close the player and stream
+                 if (effectPlayer != null) {
+                    effectPlayer.close();
+                 }
+                 // The Player closes the underlying stream, no need to close audioSrc explicitly
+                 // try { if (audioSrc != null) audioSrc.close(); } catch (IOException ioe) { /* ignore */ }
+            }
+        }).start();
     }
 
     /**

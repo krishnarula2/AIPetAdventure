@@ -26,6 +26,7 @@ import com.group14.virtualpet.Main;
 import com.group14.virtualpet.MainFrame;
 import com.group14.virtualpet.state.GameState;
 import com.group14.virtualpet.util.SaveLoadUtil;
+import com.group14.virtualpet.util.AudioManager;
 
 /**
  * Represents the main menu screen of the game.
@@ -245,6 +246,9 @@ public class MainMenuPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source instanceof JButton button) {
+            // Play sound effect on any button press in this panel
+            AudioManager.getInstance().playSoundEffect("mainbuttonSound.mp3");
+
             String buttonText = (String) button.getClientProperty("buttonText");
             
             if (buttonText == null) {
