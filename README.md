@@ -31,8 +31,10 @@ Team 14
 cd group14
 
 3. Compile and run using Maven:
-mvn compile
-mvn exec:java -Dexec.mainClass="com.group14.virtualpet.Main"
+   ```bash
+   mvn compile
+   mvn exec:java -Dexec.mainClass="com.group14.virtualpet.Main"
+   ```
 
 ⚠️ Please make sure Java 17 is installed and available on your system.
 
