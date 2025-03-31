@@ -101,8 +101,13 @@ public class ParentalControlsPanel extends JPanel implements ActionListener {
         promptLabel.setFont(new Font("Arial", Font.BOLD, 16));
         panel.add(promptLabel, BorderLayout.NORTH);
 
+        // Create a container panel for the password field to control its size
+        JPanel passwordContainer = new JPanel();
         passwordField = new JPasswordField(20);
-        panel.add(passwordField, BorderLayout.CENTER);
+        // Set preferred size to make the field an appropriate width and height
+        passwordField.setPreferredSize(new java.awt.Dimension(200, 30));
+        passwordContainer.add(passwordField);
+        panel.add(passwordContainer, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(); // Flow layout
         submitPasswordButton = new JButton("Verify");
