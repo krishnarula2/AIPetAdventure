@@ -73,15 +73,16 @@ Emergency Food Rescue System
 If the pet enters a Hungry state and the player has no food in inventory, a special "Emergency Ration" is automatically granted to avoid unfair pet death.
 
 # 🧑‍💻 Development Team
+
 Pragalvha Sharma
 
-Aalyan Muhammad
+Aaliyan Muhammad
 
 Athul Charanthara
 
-Krish Naula
+Krish Narula
 
-Manav Joshi
+Manan Joshi
 
 # 📁 File Structure
 group14/
