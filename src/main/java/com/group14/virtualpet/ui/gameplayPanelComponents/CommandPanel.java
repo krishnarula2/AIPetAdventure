@@ -29,6 +29,7 @@ public class CommandPanel extends JPanel {
     private JButton playButton;
     private JButton exerciseButton;
     private JButton saveButton;
+    private JButton mainMenuButton;
     
     private final GameplayPanel gameplayPanel;
     
@@ -50,6 +51,7 @@ public class CommandPanel extends JPanel {
         playButton = createStyledButton("Play", new Color(23, 162, 184));
         exerciseButton = createStyledButton("Exercise", new Color(111, 66, 193));
         saveButton = createStyledButton("Save Game", new Color(52, 58, 64));
+        mainMenuButton = createStyledButton("Main Menu", new Color(220, 53, 69));
         
         // Add buttons to panel
         add(feedButton);
@@ -65,6 +67,8 @@ public class CommandPanel extends JPanel {
         add(exerciseButton);
         add(Box.createRigidArea(new Dimension(10, 0)));
         add(saveButton);
+        add(Box.createRigidArea(new Dimension(10, 0)));
+        add(mainMenuButton);
     }
     
     private JButton createStyledButton(String text, Color bgColor) {
@@ -90,8 +94,9 @@ public class CommandPanel extends JPanel {
     public void updateCommandAvailability(Pet pet) {
         if (pet == null) {
             setAllCommandsEnabled(false);
-            // Even if there's no pet, we still want to enable the save button
+            // Even if there's no pet, we still want to enable the save button and main menu button
             saveButton.setEnabled(true);
+            mainMenuButton.setEnabled(true);
             return;
         }
         
@@ -100,8 +105,9 @@ public class CommandPanel extends JPanel {
         // Disable all buttons first
         setAllCommandsEnabled(false);
         
-        // Save button is always enabled
+        // Save button and main menu button are always enabled
         saveButton.setEnabled(true);
+        mainMenuButton.setEnabled(true);
         
         // Enable buttons based on pet state using rule-based switch
         switch (state) {
@@ -121,7 +127,7 @@ public class CommandPanel extends JPanel {
             }
             case SLEEPING, DEAD -> {
                 // No commands available
-                // All buttons remain disabled
+                // All buttons remain disabled, except save and main menu
             }
         }
     }
@@ -133,7 +139,7 @@ public class CommandPanel extends JPanel {
         vetButton.setEnabled(enabled);
         playButton.setEnabled(enabled);
         exerciseButton.setEnabled(enabled);
-        // Save button is handled separately in updateCommandAvailability
+        // Save button and main menu button are handled separately in updateCommandAvailability
     }
     
     private boolean isColorBright(Color color) {
@@ -182,5 +188,9 @@ public class CommandPanel extends JPanel {
     
     public JButton getSaveButton() {
         return saveButton;
+    }
+    
+    public JButton getMainMenuButton() {
+        return mainMenuButton;
     }
 } 

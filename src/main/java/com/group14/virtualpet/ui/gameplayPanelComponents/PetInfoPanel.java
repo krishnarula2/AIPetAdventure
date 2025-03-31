@@ -32,7 +32,7 @@ public class PetInfoPanel extends JPanel {
     public PetInfoPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        setPreferredSize(new Dimension(250, 0));
+        setPreferredSize(new Dimension(300, 0));
         setBackground(GameplayPanel.LIGHT_COLOR);
         setOpaque(false);
         
@@ -165,7 +165,7 @@ public class PetInfoPanel extends JPanel {
         ));
         
         progressBar.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
-        progressBar.setPreferredSize(new Dimension(200, 50));
+        progressBar.setPreferredSize(new Dimension(250, 50));
         
         return progressBar;
     }

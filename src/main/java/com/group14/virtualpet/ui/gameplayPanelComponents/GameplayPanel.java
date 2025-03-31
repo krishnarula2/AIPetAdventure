@@ -67,6 +67,9 @@ public class GameplayPanel extends JPanel implements ActionListener {
     private final Timer spriteTimer;
     private boolean spriteFlipFlop = false;
     private PetState lastDisplayedState = null;
+    
+    // Callback for returning to main menu
+    private Runnable returnToMainMenuCallback;
 
     // Component references
     private PetInfoPanel petInfoPanel;
@@ -78,8 +81,8 @@ public class GameplayPanel extends JPanel implements ActionListener {
     private int ticksSinceLastItemGrant = 0;
 
     public GameplayPanel() {
-        setLayout(new BorderLayout(15, 15));
-        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        setLayout(new BorderLayout(20, 15));
+        setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
         setOpaque(true);
         setBackground(new Color(240, 242, 245));
 
@@ -93,7 +96,7 @@ public class GameplayPanel extends JPanel implements ActionListener {
         // Create the center panel
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BorderLayout(0, 15));
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 15));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
         centerPanel.setOpaque(false);
 
         // Create sprite panel and inventory panel
@@ -113,6 +116,17 @@ public class GameplayPanel extends JPanel implements ActionListener {
         gameTimer.setInitialDelay(0);
         spriteTimer = new Timer(500, this);
         spriteTimer.setInitialDelay(500);
+    }
+
+    /**
+     * Sets the callback to return to the main menu.
+     * This must be called by the parent component to enable the "Return to Main Menu" functionality.
+     * 
+     * @param callback The callback to execute when returning to main menu
+     */
+    public void setReturnToMainMenuCallback(Runnable callback) {
+        System.out.println("Setting return to main menu callback: " + (callback != null ? "valid callback" : "null callback"));
+        this.returnToMainMenuCallback = callback;
     }
 
     private void setupKeyBindings() {
@@ -210,6 +224,49 @@ public class GameplayPanel extends JPanel implements ActionListener {
         this.currentPet = null;
         this.currentGameState = null;
     }
+    
+    /**
+     * Pauses the game timers temporarily without stopping the game completely.
+     */
+    private void pauseGame() {
+        if (gameTimer != null && gameTimer.isRunning()) {
+            System.out.println("Pausing game timer...");
+            gameTimer.stop();
+        }
+        
+        if (spriteTimer != null && spriteTimer.isRunning()) {
+            System.out.println("Pausing sprite animation timer...");
+            spriteTimer.stop();
+        }
+        
+        // Update UI to show paused state if needed
+        this.repaint();
+        
+        System.out.println("Game paused while showing dialog");
+    }
+    
+    /**
+     * Resumes the game after it was paused.
+     */
+    private void resumeGame() {
+        if (currentPet != null && currentGameState != null) {
+            if (gameTimer != null && !gameTimer.isRunning()) {
+                System.out.println("Resuming game timer...");
+                gameTimer.start();
+            }
+            
+            if (spriteTimer != null && !spriteTimer.isRunning()) {
+                System.out.println("Resuming sprite animation timer...");
+                spriteTimer.start();
+            }
+            
+            // Force a UI update to ensure everything is current
+            updatePetStatusDisplay();
+            this.repaint();
+        } else {
+            System.err.println("Cannot resume game: Pet or game state is missing.");
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -274,9 +331,14 @@ public class GameplayPanel extends JPanel implements ActionListener {
                 handleExerciseCommand();
             } else if (source == commandPanel.getSaveButton()) {
                 handleSaveGameCommand();
+            } else if (source == commandPanel.getMainMenuButton()) {
+                handleMainMenuCommand();
             }
             updatePetStatusDisplay();
             this.repaint(); // Ensure the panel repaints after UI updates
+        } else if (source == commandPanel.getMainMenuButton()) {
+            // Allow main menu button to work even if pet is dead
+            handleMainMenuCommand();
         }
     }
 
@@ -413,23 +475,123 @@ public class GameplayPanel extends JPanel implements ActionListener {
 
     void handleSaveGameCommand() {
         if (currentPet != null && playerInventory != null) {
-            String filename = currentPet.getName();
-            if (filename == null || filename.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Cannot save game: Pet name is invalid.", "Save Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            filename = filename.trim().replaceAll("[^a-zA-Z0-9.-]", "_");
-            GameState stateToSave = (currentGameState != null)
-                    ? currentGameState
-                    : new GameState(currentPet, playerInventory, score);
-            boolean success = SaveLoadUtil.saveGame(stateToSave, filename);
+            boolean success = saveGame();
             if (success) {
-                JOptionPane.showMessageDialog(this, "Game saved successfully!", "Game Saved", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Failed to save game.", "Save Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Game saved successfully! Returning to main menu.", "Game Saved", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Stop the game and return to main menu
+                stopGame();
+                
+                // Add debug log to check if callback is set
+                if (returnToMainMenuCallback != null) {
+                    System.out.println("Executing return to main menu callback after save...");
+                    returnToMainMenuCallback.run();
+                } else {
+                    System.err.println("ERROR: Return to main menu callback not set! Cannot navigate back to main menu.");
+                    JOptionPane.showMessageDialog(this, 
+                        "Could not return to main menu automatically. Please restart the application.",
+                        "Navigation Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
             }
         } else {
             System.err.println("Cannot save game: No current pet or inventory.");
+            JOptionPane.showMessageDialog(this, "No active game to save.", "Save Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
+     * Saves the current game state.
+     * 
+     * @return true if the save was successful, false otherwise
+     */
+    private boolean saveGame() {
+        if (currentPet == null || playerInventory == null) {
+            return false;
+        }
+        
+        String filename = currentPet.getName();
+        if (filename == null || filename.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Cannot save game: Pet name is invalid.", "Save Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        filename = filename.trim().replaceAll("[^a-zA-Z0-9.-]", "_");
+        GameState stateToSave = (currentGameState != null)
+                ? currentGameState
+                : new GameState(currentPet, playerInventory, score);
+        
+        boolean success = SaveLoadUtil.saveGame(stateToSave, filename);
+        if (!success) {
+            JOptionPane.showMessageDialog(this, "Failed to save game.", "Save Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        return success;
+    }
+
+    /**
+     * Handles the "Return to Main Menu" button click.
+     * Pauses the game, shows confirmation dialogs, and potentially returns to main menu.
+     */
+    void handleMainMenuCommand() {
+        // First, pause the game while showing dialogs
+        pauseGame();
+        
+        // Ask for confirmation to return to main menu
+        int confirmResult = JOptionPane.showConfirmDialog(
+            this,
+            "Are you sure you want to return to the main menu?",
+            "Return to Main Menu",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE
+        );
+        
+        if (confirmResult == JOptionPane.YES_OPTION) {
+            // Ask if they want to save before returning
+            if (currentPet != null && playerInventory != null) {
+                int saveResult = JOptionPane.showConfirmDialog(
+                    this,
+                    "Would you like to save your game before returning to the main menu?",
+                    "Save Game",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE
+                );
+                
+                if (saveResult == JOptionPane.YES_OPTION) {
+                    // Save the game - when saving from here, we still return to menu
+                    boolean saveSuccess = saveGame();
+                    if (saveSuccess) {
+                        JOptionPane.showMessageDialog(this, "Game saved successfully!", "Game Saved", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            }
+            
+            // Stop the game and return to main menu
+            stopGame();
+            if (returnToMainMenuCallback != null) {
+                System.out.println("Executing return to main menu callback from main menu button...");
+                returnToMainMenuCallback.run();
+            } else {
+                System.err.println("ERROR: Return to main menu callback not set! Cannot navigate back to main menu.");
+                JOptionPane.showMessageDialog(this, 
+                    "Could not return to main menu automatically. Please restart the application.",
+                    "Navigation Error",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            // Resume the game if the user decides not to return to main menu
+            System.out.println("User decided to continue the game. Resuming...");
+            
+            // Show a brief notification that the game is continuing
+            JOptionPane.showMessageDialog(
+                this,
+                "Game continuing...",
+                "Returning to Game",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+            
+            // Resume the game
+            resumeGame();
         }
     }
 

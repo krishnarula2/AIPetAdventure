@@ -52,6 +52,10 @@ public class MainFrame extends JFrame implements Consumer<String>, KeyListener {
         // Pass 'this' as the navigateCallback (Consumer<String>)
         mainMenuPanel = new MainMenuPanel(this);
         gameplayPanel = new GameplayPanel(); // GameplayPanel doesn't need navigation callback directly currently
+        
+        // Set the return to main menu callback for GameplayPanel
+        gameplayPanel.setReturnToMainMenuCallback(() -> accept(Main.MAIN_MENU_CARD));
+        
         petSelectionPanel = new PetSelectionPanel(this, this::startNewGame);
         instructionPanel = new InstructionPanel(this);
         parentalControlsPanel = new ParentalControlsPanel(this);
