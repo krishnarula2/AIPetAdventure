@@ -323,7 +323,7 @@ else if (source == spriteTimer) {
             movementMode = true;
             updateSpriteImage();
             // Set a one-shot timer to revert back after 100ms
-            Timer revertTimer = new Timer(100, new ActionListener() {
+            Timer revertTimer = new Timer(300, new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     movementMode = false;
