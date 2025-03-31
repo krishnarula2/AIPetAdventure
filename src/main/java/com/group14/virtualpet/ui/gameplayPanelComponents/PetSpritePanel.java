@@ -46,87 +46,75 @@ public class PetSpritePanel extends JPanel {
     }
     
     /**
-     * Updates the pet sprite based on pet type and state.
-     * 
-     * @param petType The type of pet (e.g., "Dog", "Cat")
-     * @param state The current state of the pet
-     * @param spriteFlipFlop Animation toggle for sprite alternation
-     */
-    public void updateSprite(String petType, PetState state, boolean spriteFlipFlop) {
-        if (petType == null || state == null) {
-            petSpriteLabel.setIcon(null);
-            petSpriteLabel.setText("[Sprite Error]");
-            petSpriteLabel.setHorizontalAlignment(JLabel.CENTER);
-            return;
-        }
-        
-        // Load the appropriate sprite
-        ImageIcon originalIcon = loadPetSprite(petType, state);
-        
-        if (originalIcon != null) {
-            // Scaling Logic
-            int originalWidth = originalIcon.getIconWidth();
-            int originalHeight = originalIcon.getIconHeight();
-            int maxWidth = 300;
-            int maxHeight = 300;
-            int newWidth = originalWidth;
-            int newHeight = originalHeight;
-
-            // Calculate scaling factor to fit within bounds while maintaining aspect ratio
-            if (originalWidth > maxWidth) {
-                double ratio = (double) maxWidth / originalWidth;
-                newWidth = maxWidth;
-                newHeight = (int) (originalHeight * ratio);
-            }
-
-            if (newHeight > maxHeight) {
-                double ratio = (double) maxHeight / newHeight;
-                newHeight = maxHeight;
-                newWidth = (int) (newWidth * ratio);
-            }
-
-            // Scale the image
-            Image scaledImage = originalIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-            ImageIcon scaledIcon = new ImageIcon(scaledImage);
-
-            petSpriteLabel.setIcon(scaledIcon);
-            petSpriteLabel.setText(null);
-            petSpriteLabel.setHorizontalAlignment(JLabel.CENTER);
-            petSpriteLabel.setVerticalAlignment(JLabel.CENTER);
-        } else {
-            petSpriteLabel.setIcon(null);
-            petSpriteLabel.setText("[Sprite Error]");
-            petSpriteLabel.setHorizontalAlignment(JLabel.CENTER);
-        }
+ * Updates the pet sprite based on pet type, state, sprite flip-flop, and movement mode.
+ *
+ * @param petType The type of pet (e.g., "friendly_robot")
+ * @param state The current state of the pet
+ * @param spriteFlipFlop Used for rapid alternation (if needed)
+ * @param movementMode If true, show the movement version of the sprite.
+ */
+public void updateSprite(String petType, PetState state, boolean spriteFlipFlop, boolean movementMode) {
+    if (petType == null || state == null) {
+        petSpriteLabel.setIcon(null);
+        petSpriteLabel.setText("[Sprite Error]");
+        petSpriteLabel.setHorizontalAlignment(JLabel.CENTER);
+        return;
     }
     
-    private ImageIcon loadPetSprite(String petType, PetState state) {
-        if (petType == null || state == null) return null;
+    ImageIcon originalIcon = loadPetSprite(petType, state, movementMode);
     
-        // Convert PetState enum to a capitalized string
-        String capitalizedState = state.name().substring(0, 1) 
-                                  + state.name().substring(1).toLowerCase();
-    
-        // Build the filename based on state
-        String fileName;
-        if (state == PetState.NORMAL) {
-            fileName = petType + ".png"; 
-        } else {
-            fileName = petType + "_" + capitalizedState + ".png";
+    if (originalIcon != null) {
+        int originalWidth = originalIcon.getIconWidth();
+        int originalHeight = originalIcon.getIconHeight();
+        int maxWidth = 300;
+        int maxHeight = 300;
+        int newWidth = originalWidth;
+        int newHeight = originalHeight;
+        if (originalWidth > maxWidth) {
+            double ratio = (double) maxWidth / originalWidth;
+            newWidth = maxWidth;
+            newHeight = (int) (originalHeight * ratio);
         }
-    
-        // Build the full resource path
-        String resourcePath = "/images/pets/" + petType + "/" + fileName;
-    
-        // Load the image
-        URL imageURL = getClass().getResource(resourcePath);
-        if (imageURL != null) {
-            return new ImageIcon(imageURL);
-        } else {
-            return null;
+        if (newHeight > maxHeight) {
+            double ratio = (double) maxHeight / newHeight;
+            newHeight = maxHeight;
+            newWidth = (int) (newWidth * ratio);
         }
+        Image scaledImage = originalIcon.getImage().getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        petSpriteLabel.setIcon(new ImageIcon(scaledImage));
+        petSpriteLabel.setText(null);
+        petSpriteLabel.setHorizontalAlignment(JLabel.CENTER);
+        petSpriteLabel.setVerticalAlignment(JLabel.CENTER);
+    } else {
+        petSpriteLabel.setIcon(null);
+        petSpriteLabel.setText("[Sprite Error]");
+        petSpriteLabel.setHorizontalAlignment(JLabel.CENTER);
     }
+}
+
     
+   /**
+ * Loads the pet sprite image based on pet type, state, and movement mode.
+ */
+private ImageIcon loadPetSprite(String petType, PetState state, boolean movementMode) {
+    if (petType == null || state == null) return null;
+    String fileName;
+    if (state == PetState.NORMAL) {
+        fileName = petType + (movementMode ? "_movement.png" : ".png");
+    } else {
+        String capitalizedState = state.name().substring(0, 1) + state.name().substring(1).toLowerCase();
+        fileName = petType + "_" + capitalizedState + (movementMode ? "_movement.jpeg" : ".jpeg");
+    }
+    String resourcePath = "/images/pets/" + petType + "/" + fileName;
+    URL imageURL = getClass().getResource(resourcePath);
+    if (imageURL != null) {
+        return new ImageIcon(imageURL);
+    } else {
+        System.err.println("Warning: Could not load sprite file: " + resourcePath);
+        return null;
+    }
+}
+
     /**
      * Inner class for the colorful animated background.
      */

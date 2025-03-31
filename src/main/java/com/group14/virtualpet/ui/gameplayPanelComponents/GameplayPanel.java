@@ -76,6 +76,10 @@ public class GameplayPanel extends JPanel implements ActionListener {
     private PetSpritePanel petSpritePanel;
     private InventoryPanel inventoryPanel;
     private CommandPanel commandPanel;
+
+    // New fields for movement animation
+    private boolean movementMode = false;
+    private int movementTimerCounter = 0;
     
     private int score;
     private int ticksSinceLastItemGrant = 0;
@@ -308,12 +312,35 @@ public class GameplayPanel extends JPanel implements ActionListener {
             }
         }
         // Sprite animation tick
-        else if (source == spriteTimer) {
-            if (currentPet != null && currentPet.getCurrentState() != PetState.DEAD) {
-                spriteFlipFlop = !spriteFlipFlop;
-                updateSpriteImage();
-            }
+        // Sprite animation tick
+else if (source == spriteTimer) {
+    if (currentPet != null && currentPet.getCurrentState() != PetState.DEAD) {
+        spriteFlipFlop = !spriteFlipFlop;
+        movementTimerCounter++;
+        // When 20 ticks (approximately 10 seconds at 500ms per tick) have passed:
+        if (movementTimerCounter >= 20) {
+            // Temporarily show the movement sprite
+            movementMode = true;
+            updateSpriteImage();
+            // Set a one-shot timer to revert back after 100ms
+            Timer revertTimer = new Timer(100, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    movementMode = false;
+                    updateSpriteImage();
+                    ((Timer) e.getSource()).stop();
+                }
+            });
+            revertTimer.setRepeats(false);
+            revertTimer.start();
+            movementTimerCounter = 0;
+        } else {
+            updateSpriteImage();
         }
+    }
+}
+
+        
         // Command button actions
         else if (currentPet != null && currentPet.getCurrentState() != PetState.DEAD) {
             // Play button click sound effect
@@ -611,8 +638,10 @@ public class GameplayPanel extends JPanel implements ActionListener {
 
     private void updateSpriteImage() {
         if (currentPet == null) return;
-        petSpritePanel.updateSprite(currentPet.getPetType(), currentPet.getCurrentState(), spriteFlipFlop);
+        petSpritePanel.updateSprite(currentPet.getPetType(), currentPet.getCurrentState(), spriteFlipFlop, movementMode);
     }
+    
+    
 
     @Override
     protected void paintComponent(java.awt.Graphics g) {
