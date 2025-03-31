@@ -25,8 +25,8 @@ import javax.swing.SwingUtilities;
 import com.group14.virtualpet.Main;
 import com.group14.virtualpet.MainFrame;
 import com.group14.virtualpet.state.GameState;
-import com.group14.virtualpet.util.SaveLoadUtil;
 import com.group14.virtualpet.util.AudioManager;
+import com.group14.virtualpet.util.SaveLoadUtil;
 
 /**
  * Represents the main menu screen of the game.
@@ -145,7 +145,7 @@ public class MainMenuPanel extends JPanel implements ActionListener {
         courseInfoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         courseInfoLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JLabel uniTermLabel = new JLabel("Western University • Fall 2024", SwingConstants.CENTER);
+        JLabel uniTermLabel = new JLabel("Western University • Winter 2025", SwingConstants.CENTER);
         uniTermLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         uniTermLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         

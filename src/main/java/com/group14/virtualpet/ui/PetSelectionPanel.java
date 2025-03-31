@@ -8,8 +8,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.net.URL;
 import java.util.function.Consumer;
 
@@ -177,7 +175,7 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
         
         // Set a consistent preferred size for all cards
-        card.setPreferredSize(new Dimension(220, 350)); // Adjust width/height as needed
+        card.setPreferredSize(new Dimension(220, 400)); // Increased height to accommodate new images
         
         // Center elements horizontally
         card.setAlignmentX(CENTER_ALIGNMENT);
@@ -333,7 +331,9 @@ public class PetSelectionPanel extends JPanel implements ActionListener {
         
         URL imageURL = getClass().getResource(imagePath);
         if (imageURL != null) {
-            return new ImageIcon(imageURL);
+            ImageIcon icon = new ImageIcon(imageURL);
+            // Resize the image to fit the card better
+            return new ImageIcon(icon.getImage().getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH));
         } else {
             System.err.println("Warning: Could not load image for " + petType + " at path: " + imagePath);
             return null;
