@@ -157,6 +157,8 @@ public class GameplayPanel extends JPanel implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (currentPet != null && currentPet.getCurrentState() != PetState.DEAD) {
+                    // Play button click sound effect for keyboard shortcuts
+                    AudioManager.getInstance().playSoundEffect("mainButtonSound.mp3");
                     action.actionPerformed(e);
                 }
             }
@@ -477,22 +479,7 @@ public class GameplayPanel extends JPanel implements ActionListener {
         if (currentPet != null && playerInventory != null) {
             boolean success = saveGame();
             if (success) {
-                JOptionPane.showMessageDialog(this, "Game saved successfully! Returning to main menu.", "Game Saved", JOptionPane.INFORMATION_MESSAGE);
-                
-                // Stop the game and return to main menu
-                stopGame();
-                
-                // Add debug log to check if callback is set
-                if (returnToMainMenuCallback != null) {
-                    System.out.println("Executing return to main menu callback after save...");
-                    returnToMainMenuCallback.run();
-                } else {
-                    System.err.println("ERROR: Return to main menu callback not set! Cannot navigate back to main menu.");
-                    JOptionPane.showMessageDialog(this, 
-                        "Could not return to main menu automatically. Please restart the application.",
-                        "Navigation Error",
-                        JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(this, "Game saved successfully!", "Game Saved", JOptionPane.INFORMATION_MESSAGE);
             }
         } else {
             System.err.println("Cannot save game: No current pet or inventory.");
