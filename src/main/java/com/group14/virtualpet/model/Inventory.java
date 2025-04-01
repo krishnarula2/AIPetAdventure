@@ -1,3 +1,11 @@
+/**
+ * Class representing the virtual pet's inventory, which contains various items.
+ * Allows items to be added, removed, and used by the pet.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.model;
 
 import java.io.Serializable;
