@@ -1,3 +1,11 @@
+/**
+ * Class representing a food item for the virtual pet.
+ * Contains properties such as the food item's name and its nutritional value.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.model;
 
 import java.io.Serializable;
