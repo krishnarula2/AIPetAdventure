@@ -1,3 +1,11 @@
+/**
+ * Class representing a gift item for the virtual pet.
+ * Contains properties related to the gift's effect on the pet.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.model;
 
 import java.io.Serializable;
