@@ -1,3 +1,11 @@
+/**
+ * Class representing the state of the pet, such as its health, hunger, and mood.
+ * This class holds the various attributes that describe the current status of the pet.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.model;
 
 import java.io.Serializable;
