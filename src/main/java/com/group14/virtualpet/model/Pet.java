@@ -1,3 +1,11 @@
+/**
+ * Class representing a virtual pet in the game.
+ * The pet has properties such as its name, health, and hunger level.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.model;
 
 import java.io.Serializable;
