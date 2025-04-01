@@ -1,21 +1,32 @@
+/**
+ * Main application class for the Virtual Pet game.
+ * Launches the MainFrame and manages the overall game flow.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
 package com.group14.virtualpet;
 
 import javax.swing.SwingUtilities;
 
 /**
- * Main application class for the Virtual Pet game.
- * Launches the MainFrame.
+ * Main application class responsible for initializing the game's GUI and controlling the flow of the game.
  */
 public class Main {
 
-    // Define card names as constants
-    public static final String MAIN_MENU_CARD = "MainMenu";
-    public static final String GAMEPLAY_CARD = "Gameplay";
-    public static final String PET_SELECTION_CARD = "PetSelection";
-    public static final String INSTRUCTION_CARD = "Instructions"; // Add card name for instructions
-    public static final String PARENTAL_CONTROLS_CARD = "ParentalControls"; // Add card name for parental controls
-    public static final String SETTINGS_CARD = "Settings"; // Add card name for settings
+    // Define card names as constants for different game screens
+    public static final String MAIN_MENU_CARD = "MainMenu"; /**< Card for the main menu screen */
+    public static final String GAMEPLAY_CARD = "Gameplay"; /**< Card for the gameplay screen */
+    public static final String PET_SELECTION_CARD = "PetSelection"; /**< Card for pet selection screen */
+    public static final String INSTRUCTION_CARD = "Instructions"; /**< Card for instructions screen */
+    public static final String PARENTAL_CONTROLS_CARD = "ParentalControls"; /**< Card for parental controls screen */
+    public static final String SETTINGS_CARD = "Settings"; /**< Card for settings screen */
 
+    /**
+     * Main method to launch the game.
+     * 
+     * @param args Command line arguments passed to the application
+     */
     public static void main(String[] args) {
         // Schedule a job for the event-dispatching thread:
         // creating and showing this application's GUI.
@@ -23,16 +34,12 @@ public class Main {
     }
 
     /**
-     * Create the GUI and show it. For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
+     * Creates and shows the GUI for the application.
+     * This method is executed on the event-dispatching thread for thread safety.
      */
     private static void createAndShowGUI() {
-        // Use MainFrame to manage the window and panels
+        // Initialize the MainFrame for the game
         new MainFrame();
         System.out.println("Application started. MainFrame created.");
     }
-
-    // Removed static panel fields and management methods (switchPanel, startGameWithSelectedPet)
-    // They are now handled within MainFrame
-} 
+}
