@@ -1,3 +1,11 @@
+/**
+ * Abstract class representing a generic item for the virtual pet game.
+ * Can be extended by specific item types like FoodItem and GiftItem.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.model;
 
 import java.io.Serializable;
