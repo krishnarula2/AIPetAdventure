@@ -1,3 +1,9 @@
+/**
+ * Main frame for the Virtual Pet game, managing the different panels and game flow.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
 package com.group14.virtualpet;
 
 import java.awt.CardLayout;
