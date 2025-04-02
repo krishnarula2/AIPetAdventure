@@ -1,3 +1,11 @@
+/**
+ * Panel displaying the instructions for the virtual pet game.
+ * Provides the player with guidance on how to interact with the game.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.ui;
 
 import java.awt.BorderLayout;
