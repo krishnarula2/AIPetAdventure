@@ -1,3 +1,11 @@
+/**
+ * Gameplay panel showing the gameplay interface for interacting with the virtual pet.
+ * Provides real-time updates to the pet's status and allows the user to make gameplay decisions.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.ui.gameplayPanelComponents;
 
 import java.awt.BorderLayout;
