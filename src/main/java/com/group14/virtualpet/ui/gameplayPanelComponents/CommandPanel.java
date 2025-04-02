@@ -1,3 +1,11 @@
+/**
+ * Panel providing command buttons for gameplay, allowing the user to interact with the virtual pet.
+ * Includes actions like feeding, playing, and other gameplay interactions.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.ui.gameplayPanelComponents;
 
 import java.awt.Color;
