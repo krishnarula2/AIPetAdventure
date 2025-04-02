@@ -1,3 +1,11 @@
+/**
+ * Class representing the overall game state, including the pet's state and inventory.
+ * Manages game progress and saving/loading game data.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.state;
 
 import java.io.Serializable;
