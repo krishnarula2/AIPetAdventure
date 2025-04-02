@@ -1,3 +1,11 @@
+/**
+ * Panel displaying the virtual pet's inventory.
+ * Allows the player to view and manage items in the pet's inventory.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.ui.gameplayPanelComponents;
 
 import java.awt.BorderLayout;
