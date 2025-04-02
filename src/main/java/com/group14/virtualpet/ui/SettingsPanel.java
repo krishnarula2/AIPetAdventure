@@ -1,3 +1,11 @@
+/**
+ * Panel displaying the settings for the virtual pet game.
+ * Allows the player to adjust various game preferences such as sound or difficulty level.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.ui;
 
 import java.awt.BorderLayout;
