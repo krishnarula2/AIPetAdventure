@@ -1,3 +1,11 @@
+/**
+ * Panel where the player selects a pet to start the game.
+ * Allows the user to choose which pet to interact with during gameplay.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.ui;
 
 import java.awt.BorderLayout;
