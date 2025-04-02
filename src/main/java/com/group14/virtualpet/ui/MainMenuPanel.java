@@ -1,3 +1,11 @@
+/**
+ * Panel displaying the main menu of the game.
+ * Allows the player to navigate to various screens such as gameplay and settings.
+ * 
+ * @author Group14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.ui;
 
 import java.awt.BorderLayout;
