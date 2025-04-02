@@ -15,12 +15,35 @@ import javax.swing.SwingUtilities;
 public class Main {
 
     // Define card names as constants for different game screens
-    public static final String MAIN_MENU_CARD = "MainMenu"; /**< Card for the main menu screen */
-    public static final String GAMEPLAY_CARD = "Gameplay"; /**< Card for the gameplay screen */
-    public static final String PET_SELECTION_CARD = "PetSelection"; /**< Card for pet selection screen */
-    public static final String INSTRUCTION_CARD = "Instructions"; /**< Card for instructions screen */
-    public static final String PARENTAL_CONTROLS_CARD = "ParentalControls"; /**< Card for parental controls screen */
-    public static final String SETTINGS_CARD = "Settings"; /**< Card for settings screen */
+/**
+ * Card for the main menu screen.
+ */
+public static final String MAIN_MENU_CARD = "MainMenu";
+
+/**
+ * Card for the gameplay screen.
+ */
+public static final String GAMEPLAY_CARD = "Gameplay";
+
+/**
+ * Card for the pet selection screen.
+ */
+public static final String PET_SELECTION_CARD = "PetSelection";
+
+/**
+ * Card for the instructions screen.
+ */
+public static final String INSTRUCTION_CARD = "Instructions";
+
+/**
+ * Card for the parental controls screen.
+ */
+public static final String PARENTAL_CONTROLS_CARD = "ParentalControls";
+
+/**
+ * Card for the settings screen.
+ */
+public static final String SETTINGS_CARD = "Settings";
 
     /**
      * Main method to launch the game.

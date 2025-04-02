@@ -55,7 +55,7 @@ public class MainFrame extends JFrame implements Consumer<String>, KeyListener {
         mainPanel = new JPanel(cardLayout);
 
         // --- Instantiate Panels ---
-        // Pass 'this' as the navigateCallback (Consumer<String>)
+        
         mainMenuPanel = new MainMenuPanel(this);
         gameplayPanel = new GameplayPanel(); // GameplayPanel doesn't need navigation callback directly currently
         
@@ -103,7 +103,7 @@ public class MainFrame extends JFrame implements Consumer<String>, KeyListener {
 
     /**
      * Handles navigation requests from panels.
-     * Implements the Consumer<String> interface.
+     * Implements the {@code Consumer<String>} interface.
      * @param cardName The string identifier of the panel to navigate to.
      */
     @Override
