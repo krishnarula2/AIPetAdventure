@@ -1,3 +1,11 @@
+/**
+ * Unit tests for the resources in the virtual pet game.
+ * Validates game data and resource management.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet;
 
 import java.io.File;
