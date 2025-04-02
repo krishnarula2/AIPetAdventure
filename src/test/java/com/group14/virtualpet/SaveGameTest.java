@@ -1,3 +1,11 @@
+/**
+ * Unit tests for saving and loading the game state.
+ * Verifies that the game state can be properly saved and loaded.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet;
 
 import java.io.File;
