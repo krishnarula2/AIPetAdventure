@@ -1,3 +1,11 @@
+/**
+ * Panel providing parental controls for the game.
+ * Allows parents to manage or restrict the content of the game for children.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.ui;
 
 import java.awt.BorderLayout;
