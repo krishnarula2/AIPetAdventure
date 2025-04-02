@@ -1,3 +1,11 @@
+/**
+ * Panel representing the gameplay screen of the virtual pet game.
+ * It manages user interactions during the gameplay and displays the pet's status.
+ * 
+ * @author Group 14
+ * @version 1.0
+ */
+
 package com.group14.virtualpet.ui;
 
 import java.awt.BorderLayout;
